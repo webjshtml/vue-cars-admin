@@ -1,0 +1,11 @@
+.el-button-block {
+    display: block;
+    width: 100%;
+}
+.el-menu { border-right: none; }
+
+/* 侧栏菜单样式 */
+li.el-submenu {
+    .el-menu-item { background-color: #2f4357 !important;  }
+    &.is-opened .el-submenu__title { background-color: #f56c6c !important; }
+}
