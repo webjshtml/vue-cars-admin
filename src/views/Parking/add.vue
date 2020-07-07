@@ -5,7 +5,7 @@
                 <el-input v-model="form.name"></el-input>
             </el-form-item>
             <el-form-item label="区域">
-                <CityArea :cityAreaValue.sync="form.area" />
+                <CityArea :mapLocation="true" :cityAreaValue.sync="form.area" @callback="callbackComponent" />
             </el-form-item>
             <el-form-item label="类型">
                 <el-radio-group v-model="form.resource">
@@ -24,14 +24,14 @@
             </el-form-item>
             <el-form-item label="位置">
                 <div class="address-map">
-                    <AMap />
+                    <AMap ref="amap" />
                 </div>
             </el-form-item>
             <el-form-item label="经纬度">
-                <el-input v-model="form.desc"></el-input>
+                <el-input v-model="form.lonlag"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="danger" @click="aaa">确定</el-button>
+                <el-button type="danger">确定</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -54,7 +54,7 @@ export default {
           delivery: false,
           type: [],
           resource: '',
-          desc: ''
+          lonlag: ''
         },
       }
     },
@@ -62,12 +62,15 @@ export default {
     mounted(){
     },
     methods: {
-        aaa(){
-            console.log(this.form.area)
+        callbackComponent(params){
+            if(params.function) { this[params.function](params.data);  }
         },
-      onSubmit() {
-        console.log('submit!');
-      }
+        setMapCenter(data){
+            this.$refs.amap.setMapCenter(data.address);
+        },
+        onSubmit() {
+            console.log('submit!');
+        }
     }
 }
 </script>
