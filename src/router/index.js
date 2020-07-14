@@ -112,6 +112,7 @@ const routes = [
         component: () => import("../views/Cars/add.vue"),
       }
     ]
+    
   }
 ];
 
