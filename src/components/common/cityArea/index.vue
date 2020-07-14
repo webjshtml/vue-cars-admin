@@ -79,6 +79,9 @@ export default {
 					}
 				});
 			}
+		},
+		clear(){
+			this.value = "";
 		}
 	},
 	components: {},
