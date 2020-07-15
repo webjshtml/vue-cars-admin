@@ -54,7 +54,9 @@
     </div>
 </template>
 <script>
-import { GetCity, ParkingAdd, ParkingList } from "@/api/common"
+import { GetCity } from "@/api/common";
+// API
+import { ParkingList } from "@/api/parking";
 export default {
     name: "Parking",
     data(){
