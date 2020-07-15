@@ -8,7 +8,7 @@ export function ParkingAdd(data = {}){
     })
 }
 
-/** 新增停车场 */
+/** 停车场列表 */
 export function ParkingList(data = {}){
     return service.request({
         method: "post",

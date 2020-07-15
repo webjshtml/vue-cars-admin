@@ -48,14 +48,8 @@ export default {
     name: "ParkingAdd",
     data() {
       return {
-        status: [
-            { label: "禁用", value: 1 },
-            { label: "启用", value: 2 }
-        ],
-        type: [
-            { label: "室内", value: 1 },
-            { label: "室外", value: 2 }
-        ],
+        status: this.$store.state.config.parking_status,
+        type: this.$store.state.config.parking_type,
         form: {
             parkingName: "",
             area: "",
