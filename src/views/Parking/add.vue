@@ -25,7 +25,7 @@
             </el-form-item>
             <el-form-item label="位置">
                 <div class="address-map">
-                    <AMap ref="amap" @callback="callbackComponent" />
+                    <AMap ref="amap" :options="option_map" @callback="callbackComponent" />
                 </div>
             </el-form-item>
             <el-form-item label="经纬度" prop="lnglat">
@@ -43,11 +43,17 @@ import AMap from "../amap";
 // 组件
 import CityArea from "@c/common/cityArea";
 // API
-import { ParkingAdd } from "@/api/parking";
+import { ParkingAdd, ParkingDetailed } from "@/api/parking";
 export default {
     name: "ParkingAdd",
     data() {
       return {
+        // id
+        id: this.$route.query.id,
+        // 地图配置
+        option_map: {
+            mapLoad: true
+        },
         status: this.$store.state.config.parking_status,
         type: this.$store.state.config.parking_type,
         form: {
@@ -84,15 +90,17 @@ export default {
       }
     },
     components: { AMap, CityArea },
-    mounted(){
-    },
+    beforeMount(){},
+    mounted(){},
     methods: {
         callbackComponent(params){
             if(params.function) { this[params.function](params.data);  }
         },
-        setMapCenter(data){
-            this.$refs.amap.setMapCenter(data.address);
+        /** 地图加载完成 */
+        mapLoad(){
+            this.getDetaile();
         },
+        /** 提交表单 */
         onSubmit(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
@@ -117,6 +125,26 @@ export default {
                 this.button_loading = false;
             })
         },
+        /** 获取详情 */
+        getDetaile(){
+            if(!this.id) { return false; }
+            ParkingDetailed({ id: this.id }).then(response => {
+                const data = response.data
+                // 还原数据
+                for(let key in data) {  // 接口请求出来的 
+                    if(Object.keys(this.form).includes(key)) { // true  ["parkingName", "area", "address", "type", "carsNumber", "status", "lnglat", "content"].includes("region")
+                        this.form[key] = data[key];
+                    }
+                }
+                // 设置覆盖物
+                const splitLnglat = data.lnglat.split(",");
+                const lnglat = {
+                    lng: splitLnglat[0],
+                    lat: splitLnglat[1]
+                }
+                this.$refs.amap.setMarker(lnglat);
+            })
+        },
         /** 重置表单 */
         reset(formName){
             this.$refs[formName].resetFields();
@@ -128,7 +156,10 @@ export default {
         /** 获取经纬度 */
         getLnglat(data){
             this.form.lnglat = data.lnglat.value
-        }
+        },
+        setMapCenter(data){
+            this.$refs.amap.setMapCenter(data.address);
+        },
     }
 }
 </script>

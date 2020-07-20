@@ -12,7 +12,7 @@ export default {
 		return {
 			address: [],
 			addressData: {},
-			value: "",
+			value: [],
 			cascader_options: [],
 				cascader_props: {
 					lazy: true,
@@ -56,6 +56,10 @@ export default {
 		}
 	},
 	methods: {
+		/** 初始化默认值  */
+		// initDefault(value){
+		// 	this.value = value.split(",");
+		// },
 		changeValue(value){
 			this.$emit("update:cityAreaValue", value.join());
 			// 匹配最后一项，区县
@@ -86,15 +90,16 @@ export default {
 	},
 	components: {},
 	props: {
-		cityAreaValue: {
-			type: String,
-			default: ""
-		},
+		// 配置
 		mapLocation: {
 			type: Boolean,
 			default: false
+		},
+		cityAreaValue: {
+			type: String,
+			default: ""
 		}
-	},
+	}
    
 }
 </script>

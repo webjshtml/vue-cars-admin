@@ -18,16 +18,16 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="关键字">
-                            <el-select placeholder="请选择" class="width-120">
+                            <el-select v-model="search_key" placeholder="请选择" class="width-120">
                                 <el-option label="停车场名称" value="parkingName"></el-option>
                                 <el-option label="详细区域" value="address"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item >
-                            <el-input placeholder="请输入关键字按Enter搜索"></el-input>
+                            <el-input v-model="keyword" placeholder="请输入关键字按Enter搜索"></el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="danger">搜索</el-button>
+                            <el-button type="danger" @click="getParkingList">搜索</el-button>
                         </el-form-item>
                     </el-form>
                 </el-col>
@@ -53,10 +53,14 @@
                     <el-switch v-model="scope.row.status" active-value="2" inactive-value="1" active-color="#13ce66" inactive-color="#ff4949"> </el-switch>
                 </template>
             </el-table-column>
-            <el-table-column prop="lnglat" label="查看位置"></el-table-column>
+            <el-table-column prop="lnglat" label="查看位置">
+                <template slot-scope="scoped">
+                    <el-button type="success" size="mini" @click="showMap(scoped.row)">查看地图</el-button>
+                </template>
+            </el-table-column>
             <el-table-column label="操作">
-                <template slot-scope="scope">
-                    <el-button type="danger" size="small">编辑</el-button>
+                <template slot-scope="scoped">
+                    <el-button type="danger" size="small" @click="edit(scoped.row.id)">编辑</el-button>
                     <el-button size="small">删除</el-button>
                 </template>
             </el-table-column>
@@ -77,11 +81,13 @@
                 </el-pagination>
             </el-col>
         </el-row>
+        <MapLocation :flagVisible.sync="map_show" :data="parking_data" />
     </div>
 </template>
 <script>
 // 组件
 import CityArea from "@c/common/cityArea";
+import MapLocation from "@c/dialog/showMapLocation";
 // API
 import { ParkingList } from "@/api/parking";
 export default {
@@ -97,58 +103,44 @@ export default {
             pageNumber: 1,
             // 筛选
             form: {
-                parking_name: "",
                 area: "",
                 type: "",
                 status: ""
             },
+            //
+            search_key: "",
+            keyword: "",
+            // 禁启用
             parking_status: this.$store.state.config.parking_status,
+            // 停车场类型
             parking_type: this.$store.state.config.parking_type,
-            options: [
-                {
-                    value: 1111,
-                    label: "广东省",
-                    children: [
-                        {
-                            value: 1111,
-                            label: "深圳市",
-                        },
-                        {
-                            value: 1111,
-                            label: "广州市",
-                        }
-                    ]
-                },
-                {
-                    value: 1111,
-                    label: "广西省",
-                    children: [
-                        {
-                            value: 1111,
-                            label: "南宁市",
-                            children: [
-                                {
-                                    value: "2222",
-                                    label: "八步镇"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ],
-            tableData: []
+            // 数据列表
+            tableData: [],
+            // 地图显示 
+            map_show: false,
+            parking_data: {}
         }
     },
-    components: { CityArea },
+    components: { CityArea, MapLocation },
     methods: {
         callbackComponent(params){
             if(params.function) { this[params.function](params.data); }
         },
+        /** 获取列表 */
         getParkingList(){
             const requestData = {
                 pageSize: this.pageSize,
                 pageNumber: this.pageNumber
             }
+            // 过滤筛选
+            const filterData = JSON.parse(JSON.stringify(this.form));
+            for(let key in filterData) {
+                if(filterData[key]) {
+                    requestData[key] = filterData[key];
+                }
+            }
+            // 关键字
+            if(this.keyword && this.search_key) { requestData[this.search_key] = this.keyword; }
             ParkingList(requestData).then(response => {
                 const data = response.data;
                 // 判断数据是否存在
@@ -156,6 +148,20 @@ export default {
                 // 页码
                 if(data.total) { this.total = data.total; }
             })
+        },
+        /** 编辑 */
+        edit(id){
+            this.$router.push({
+                name: "ParkingAdd",
+                query: {
+                    id
+                }
+            })
+        },
+        /** 显示地图 */
+        showMap(data){
+            this.map_show = true;
+            this.parking_data = data;
         },
         /** 页码 */
         handleSizeChange(val){
