@@ -58,3 +58,11 @@ li.el-submenu {
         img { width: 100%; height: 100%; }
     }
 }
+/* 级联菜单 */
+.cascader-input {
+    input::-webkit-input-placeholder { color:#606266; }
+    input:-moz-placeholder { color:#606266; }
+    input::-moz-placeholder { color:#606266; }
+    input:-ms-input-placeholder { color:#606266; }
+}
+

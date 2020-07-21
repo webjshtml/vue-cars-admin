@@ -36,7 +36,7 @@ export default {
                     }
                 });  // 子组件调父组件的方法
                 // 设置点覆盖物
-                // this.setMarker();
+                this.setMarker();
             })
         });
     },

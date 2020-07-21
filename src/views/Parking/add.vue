@@ -43,7 +43,7 @@ import AMap from "../amap";
 // 组件
 import CityArea from "@c/common/cityArea";
 // API
-import { ParkingAdd, ParkingDetailed } from "@/api/parking";
+import { ParkingAdd, ParkingDetailed, ParkingEdit } from "@/api/parking";
 export default {
     name: "ParkingAdd",
     data() {
@@ -104,7 +104,7 @@ export default {
         onSubmit(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    this.addParking();
+                    this.id ? this.editParking() : this.addParking();
                 } else {
                     console.log('error submit!!');
                     return false;
@@ -121,6 +121,24 @@ export default {
                 })
                 this.button_loading = false;
                 this.reset("form");
+            }).catch(error => {
+                this.button_loading = false;
+            })
+        },
+        /** 修改停车场API */
+        editParking(){
+            let requestData = JSON.parse(JSON.stringify(this.form));
+            requestData.id = this.id;
+            this.button_loading = true;
+            ParkingEdit(requestData).then(response => {
+                this.$message({
+                    type: "primary",
+                    message: response.message
+                })
+                this.button_loading = false;
+                this.$router.push({
+                    name: "ParkingIndex"
+                })
             }).catch(error => {
                 this.button_loading = false;
             })
@@ -143,6 +161,8 @@ export default {
                     lat: splitLnglat[1]
                 }
                 this.$refs.amap.setMarker(lnglat);
+                // 初始化省市区
+                this.$refs.cityArea.initDefault(data.region);
             })
         },
         /** 重置表单 */
