@@ -41,7 +41,6 @@
             </el-row>
             
         </div>
-        <TabalData :config="table_config" />
         <!-- 表格数据 -->
         <el-table :data="tableData" border style="width: 100%" v-loading="table_loading">
             <el-table-column type="selection" width="35"></el-table-column>
@@ -93,7 +92,6 @@
 // 组件
 import CityArea from "@c/common/cityArea";
 import MapLocation from "@c/dialog/showMapLocation";
-import TabalData from "@c/tableData";
 // API
 import { ParkingList, ParkingDelete } from "@/api/parking";
 let _this;
@@ -102,44 +100,6 @@ export default {
     data(){
         _this = this;
         return {
-            // 表格配置
-            table_config: {
-                thead: [
-                    { label: "停车场名称", prop: "parkingName" },
-                    { 
-                        label: "类型", 
-                        prop: "type",
-                        type: "function",
-                        callback: (row, prop) => {
-                            const data = this.parking_type_json[row[prop]];
-                            if(data) { return data.label; }
-                        }
-                    },
-                    { 
-                        label: "区域",
-                        prop: "address",
-                        type: "function",
-                        callback: (row, prop) => {
-                            let address = row[prop];
-                            let addressInfo = "";
-                            if(address) {
-                                let split = address.split(",");
-                                addressInfo += split[0];
-                                // 街道
-                                if(split[1]) {
-                                    addressInfo += `<br/>${split[1]}`
-                                }
-                            }
-                            return addressInfo;
-                        }
-                    },
-                    { label: "可停放车辆", prop: "carsNumber" },
-                    { label: "禁启用", prop: "status" },
-                    { label: "查看位置", prop: "lnglat" },
-                    { label: "操作" }
-                ],
-                url: "/parking/list/"
-            },
             // 页码
             total: 0,
             // 当前页码
@@ -160,8 +120,6 @@ export default {
             parking_status: this.$store.state.config.parking_status,
             // 停车场类型
             parking_type: this.$store.state.config.parking_type,
-            // 停车场类型JSON
-            parking_type_json: this.$store.state.config.parking_type_json,
             // 数据列表
             tableData: [],
             // 地图显示 
@@ -179,7 +137,7 @@ export default {
             }
         },
     },
-    components: { CityArea, MapLocation, TabalData },
+    components: { CityArea, MapLocation },
     methods: {
         callbackComponent(params){
             if(params.function) { this[params.function](params.data); }

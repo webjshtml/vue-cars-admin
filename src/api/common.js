@@ -9,3 +9,14 @@ export function GetCity(data = {}){
         data
     })
 }
+
+/**
+ * 获取城市列表
+ */
+export function GetTableData(params = {}){
+    return service.request({
+        method: "post",
+        url: params.url,
+        data: params.data
+    })
+}
