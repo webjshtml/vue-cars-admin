@@ -43,3 +43,13 @@ export function ParkingDelete(data = {}){
         data
     })
 }
+
+
+/** 禁启用 */
+export function ParkingStatus(data = {}){
+    return service.request({
+        method: "post",
+        url: "/parking/status/",
+        data
+    })
+}
