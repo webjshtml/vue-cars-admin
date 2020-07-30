@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { BrandLogo, BrandAdd } from "@/api/brand";
+import { BrandLogo, BrandAdd, BrandDetailed, BrandEdit } from "@/api/brand";
 export default {
   name: "",
   components: {},
@@ -55,6 +55,10 @@ export default {
     flagVisible: {
       type: Boolean,
       default: false
+    },
+    data: {
+      type: Object,
+      defult: () => {}
     }
   },
   data() {
@@ -80,6 +84,7 @@ export default {
   methods: {
     opened(){
       this.getBrandLogo();
+      this.getDetailed();
     },
     /** 获取LOGO */
     getBrandLogo(){
@@ -91,19 +96,36 @@ export default {
         if(data) { this.logo = data; }
       })
     },
+    /** 获取详情 */
+    getDetailed(){
+      this.form = this.data;
+      this.logo_current = this.data.imgUrl;
+      this.form.imgUrl = this.data.imgUrl;
+    },
     /** 提交 */
     submit(){
-      this.add();
+      this.data.id ? this.edit() : this.add();
     },
     /** 添加 */
     add(){
-      this.form.imgUrl = this.logo_current;
       BrandAdd(this.form).then(response => {
         this.$message({
           type: "success",
           message: response.message
         })
-        
+        this.reset("form");
+      })
+    },
+     /** 修改 */
+    edit(){
+      this.form.imgUrl = this.logo_current;
+      const requestData = JSON.parse(JSON.stringify(this.form));
+      BrandEdit(requestData).then(response => {
+        this.$message({
+          type: "success",
+          message: response.message
+        })
+        this.reset("form");
       })
     },
     /** 重置表单 */
