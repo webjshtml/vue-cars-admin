@@ -44,7 +44,7 @@
         <TabalData ref="table" :config="table_config">
             <!--禁启用-->
             <template v-slot:status="slotData">
-                <el-switch :disabled="slotData.data.id == switch_disabled" @change="switchChange(slotData.data)" v-model="slotData.data.status" active-value="2" inactive-value="1" active-color="#13ce66" inactive-color="#ff4949"> </el-switch>
+                <el-switch :disabled="slotData.data.id == switch_disabled" @change="switchChange(slotData.data)" v-model="slotData.data.status" active-color="#13ce66" inactive-color="#ff4949"> </el-switch>
             </template>
             <!--查看地图-->
             <template v-slot:lnglat="slotData">
@@ -125,7 +125,7 @@ export default {
             search_key: "",
             keyword: "",
             // 禁启用
-            parking_status: this.$store.state.config.parking_status,
+            parking_status: this.$store.state.config.radio_disabled,
             // 停车场类型
             parking_type: this.$store.state.config.parking_type,
             // 地图显示 
