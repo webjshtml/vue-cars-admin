@@ -1,8 +1,8 @@
 <template>
-    <el-form ref="form" :model="form" label-width="120px">
-        <el-form-item v-for="item in formItme" :key="item.prop" :label="item.label" :prop="item.prop">
+    <el-form ref="form" :model="form" :label-width="labelWidth">
+        <el-form-item v-for="item in formItme" :key="item.prop" :label="item.label" :prop="item.prop" :rules="item.rules">
             <!-- Input-->
-            <el-input v-if="item.type === 'Input'" v-model="form[item.prop]" :placeholder="item.placeholder" :style="{width: item.width}" :disabled="item.disabled"></el-input>
+            <el-input v-if="item.type === 'Input'" v-model.trim="form[item.prop]" :placeholder="item.placeholder" :style="{width: item.width}" :disabled="item.disabled"></el-input>
             <!-- 省市区 -->
             <slot v-if="item.type === 'Slot'" :name="item.slotName" />
             <!-- 省市区 -->
@@ -25,6 +25,10 @@ export default {
     name: "Form",
     components: { CityArea },
     props: {
+        labelWidth: {
+            type: String,
+            default: "120px"
+        },
         formItme: {
             type: Array,
             default: () => []
@@ -37,7 +41,11 @@ export default {
     },
     data(){
         return {
-            form: {}
+            form: {},
+            type_msg: {
+                "Input": "请输入",
+                "Radio": "请选择"
+            }
         }
     },
     methods: {
@@ -45,8 +53,21 @@ export default {
             const formData = {};
             this.formItme.forEach(item => {
                 if(item.prop) { formData[item.prop] = item.value || null; }
+                // rules 规则
+                if(item.required) { this.rules(item); }
+                // 自定义检验规则
+                if(item.validator) { item.rules = item.validator; }
             })
             this.form = formData;
+        },
+        rules(item){
+            const requiredRules = [{ required: true, message: item.required_msg || `${this.type_msg[item.type]}${item.label}`, trigger: 'change' }];
+            // 其他的 rules 规则 
+            if(item.rules && item.rules.length > 0) {
+                item.rules = requiredRules.concat(item.rules);
+            }else{
+                item.rules = requiredRules;
+            }
         }
     },
     watch: {

@@ -10,6 +10,8 @@ module.exports = {
    * webpack配置,see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
    **/
   chainWebpack: (config) => {
+
+
     const svgRule = config.module.rule("svg");     
     svgRule.uses.clear();     
     svgRule

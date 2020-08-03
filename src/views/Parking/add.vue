@@ -1,6 +1,6 @@
 <template>
     <div class="parking-add">
-        <VueForm :formItme="form_item" :formHandler="form_handler">
+        <VueForm ref="vuForm" :formItme="form_item" :formHandler="form_handler">
             <template v-slot:city>
                 <CityArea ref="cityArea" :mapLocation="true" :cityAreaValue.sync="form.area" @callback="callbackComponent" />
             </template>
@@ -23,19 +23,59 @@ import { ParkingAdd, ParkingDetailed, ParkingEdit } from "@/api/parking";
 export default {
     name: "ParkingAdd",
     data() {
+        let validatePass = (rule, value, callback) => {
+            if(!value) {
+                callback(new Error('请输入停车场名称'));
+            }else{
+                callback();
+            }
+        }
+        let validateNumber = (rule, value, callback) => {
+            const regNumber = /^[0-9]*$/;
+            if(!value) {
+                callback(new Error('请输入可停放车辆'));
+            }else if(!regNumber.test(value)){
+                callback(new Error('请输入数字'));
+            }else{
+                callback();
+            }
+        }
       return {
         // 表单配置
         form_item: [
-            { type: "Input", label: "停车场名称", placeholder: "请输入停车场名称", prop: "parkingName", width: "200px" },
-            { type: "Slot", slotName: "city", prop:"area", value: [], label: "区域" },
-            { type: "Input", label: "详细地址", placeholder: "请输入详细地址", prop: "address" },
+            { 
+                type: "Input", 
+                label: "停车场名称", 
+                placeholder: "请输入停车场名称",
+                prop: "parkingName", 
+                width: "200px",
+                validator: [{ validator: validatePass, trigger: 'change' }]
+            },
+            { 
+                type: "Slot", 
+                slotName: "city", 
+                prop:"area", 
+                value: [], 
+                label: "区域"
+            },
+            { 
+                type: "Input", 
+                label: "详细地址", 
+                placeholder: "请输入详细地址", 
+                prop: "address",
+                required: true
+            },
             { 
                 type: "Radio", 
                 label: "类型", 
                 prop: "type",
-                options: this.$store.state.config.parking_type
+                options: this.$store.state.config.parking_type,
+                required: true
             },
-            { type: "Input", label: "可停放车辆", placeholder: "请输入数字类型", prop: "carsNumber" },
+            { 
+                type: "Input", label: "可停放车辆", placeholder: "请输入数字类型", prop: "carsNumber",
+                validator: [{ validator: validateNumber, trigger: 'change' }]
+            },
             { 
                 type: "Radio", 
                 label: "禁启用", 
@@ -46,7 +86,7 @@ export default {
             { type: "Input", label: "经纬度", placeholder: "请输入详细地址", prop: "lnglat", disabled: true },
         ],
         form_handler: [
-            { label: "确定", key: "submit",  type: "danger", handler: () => this.aaa() },
+            { label: "确定", key: "submit",  type: "danger", handler: () => this.formValidate() },
             { label: "重置", key: "reset" },
         ],
         // id
@@ -67,25 +107,6 @@ export default {
             lnglat: "",
             content: ""
         },
-        // 表单验证规则
-        rules: {
-            parkingName: [
-                { required: true, message: "请输入停车场名称", trigger: 'change' }
-            ],
-            carsNumber: [
-                { required: true, message: "数量不能为空", trigger: 'change' },
-                { type: 'number', message: '请输入数字'}
-            ],
-            address: [
-                { required: true, message: "详情地址不能为空", trigger: 'change' }
-            ],
-            area: [
-                { required: true, message: "请选择省市区", trigger: 'change' }
-            ],
-            lnglat: [
-                { required: true, message: "经纬度不能为空", trigger: 'change' }
-            ]
-        },
         // 按钮加载
         button_loading: false
       }
@@ -94,11 +115,15 @@ export default {
     beforeMount(){},
     mounted(){},
     methods: {
-        aaa(){
-            alert(111)
-        },
-        bbb(){
-            alert(222)
+        formValidate(){
+            this.$refs.vuForm.$refs.form.validate((valid) => {
+                if (valid) {
+                    alert('submit!');
+                } else {
+                    console.log('11111');
+                    return false;
+                }
+            });
         },
         callbackComponent(params){
             if(params.function) { this[params.function](params.data);  }
