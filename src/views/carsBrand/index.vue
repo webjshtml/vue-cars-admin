@@ -30,7 +30,7 @@
             <el-button size="small" :loading="slotData.data.id == row_id" @click="delConfirm(slotData.data.id)">删除</el-button>
         </template>
     </TabalData>
-    <AddCarsBrand :flagVisible.sync="dialog_show" :data="data_brand" /><!--父组件往子组件传数据时，是一个单向数据流-->
+    <AddCarsBrand :flagVisible.sync="dialog_show" :data="data_brand" @callbackComponent="callbackComponent" /><!--父组件往子组件传数据时，是一个单向数据流-->
   </div>
 </template>
 <script>
@@ -90,6 +90,10 @@ export default {
     };
   },
   methods: {
+    callbackComponent(params){
+      console.log(params)
+      if(params.function) { this[params.function](); }
+    },
     /** 搜索 */
     search(){
       const requestData = {

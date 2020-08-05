@@ -1,8 +1,8 @@
 <template>
     <div class="parking-add">
-        <VueForm ref="vuForm" :formItme="form_item" :formHandler="form_handler">
+        <VueForm ref="vuForm" :formData="form_data" :formItme="form_item" :formHandler="form_handler">
             <template v-slot:city>
-                <CityArea ref="cityArea" :mapLocation="true" :cityAreaValue.sync="form.area" @callback="callbackComponent" />
+                <CityArea ref="cityArea" :mapLocation="true" :cityAreaValue.sync="form_data.area" @callback="callbackComponent" />
             </template>
             <template v-slot:amap>
                 <div class="address-map">
@@ -41,6 +41,16 @@ export default {
             }
         }
       return {
+        // 表单数据配置
+        form_data: {
+            parkingName: "",
+            area: "",
+            address: "",
+            type: "",
+            carsNumber: "",
+            status: "",
+            lnglat: ""
+        },
         // 表单配置
         form_item: [
             { 
@@ -55,7 +65,6 @@ export default {
                 type: "Slot", 
                 slotName: "city", 
                 prop:"area", 
-                value: [], 
                 label: "区域"
             },
             { 
@@ -97,16 +106,6 @@ export default {
         },
         status: this.$store.state.config.radio_disabled,
         type: this.$store.state.config.parking_type,
-        form: {
-            parkingName: "",
-            area: "",
-            address: "",
-            type: "",
-            carsNumber: "",
-            status: "",
-            lnglat: "",
-            content: ""
-        },
         // 按钮加载
         button_loading: false
       }
@@ -115,12 +114,13 @@ export default {
     beforeMount(){},
     mounted(){},
     methods: {
+        /** 提交表单 */
         formValidate(){
             this.$refs.vuForm.$refs.form.validate((valid) => {
                 if (valid) {
-                    alert('submit!');
+                    this.id ? this.editParking() : this.addParking();
                 } else {
-                    console.log('11111');
+                    console.log('error submit!!');
                     return false;
                 }
             });
@@ -131,17 +131,6 @@ export default {
         /** 地图加载完成 */
         mapLoad(){
             this.getDetaile();
-        },
-        /** 提交表单 */
-        onSubmit(formName) {
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    this.id ? this.editParking() : this.addParking();
-                } else {
-                    console.log('error submit!!');
-                    return false;
-                }
-            })
         },
         /** 新增停车场API */
         addParking(){
@@ -159,7 +148,7 @@ export default {
         },
         /** 修改停车场API */
         editParking(){
-            let requestData = JSON.parse(JSON.stringify(this.form));
+            let requestData = JSON.parse(JSON.stringify(this.form_data));
             requestData.id = this.id;
             this.button_loading = true;
             ParkingEdit(requestData).then(response => {
@@ -182,8 +171,8 @@ export default {
                 const data = response.data
                 // 还原数据
                 for(let key in data) {  // 接口请求出来的 
-                    if(Object.keys(this.form).includes(key)) { // true  ["parkingName", "area", "address", "type", "carsNumber", "status", "lnglat", "content"].includes("region")
-                        this.form[key] = data[key];
+                    if(Object.keys(this.form_data).includes(key)) { // true  ["parkingName", "area", "address", "type", "carsNumber", "status", "lnglat", "content"].includes("region")
+                        this.form_data[key] = data[key];
                     }
                 }
                 // 设置覆盖物

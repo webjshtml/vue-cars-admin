@@ -2,23 +2,9 @@
   <!--dialog 弹窗
     子组件接收父组件的数据，是通过属性接收
   -->
-  <el-dialog
-    title="新增车辆品牌"
-    :visible.sync="dialogVisible"
-    class="cars-dialog-center"
-    @close="close"
-    @opened="opened"
-    :close-on-click-modal="false"
-  >
-    <!--内容区-->
-    <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item label="品牌中文" prop="nameCh">
-        <el-input v-model="form.nameCh"></el-input>
-      </el-form-item>
-      <el-form-item label="品牌英文" prop="nameEn">
-        <el-input v-model="form.nameEn"></el-input>
-      </el-form-item>
-      <el-form-item label="LOGO" prop="imgUrl">
+  <el-dialog title="新增车辆品牌" :visible.sync="dialogVisible" class="cars-dialog-center" @close="close" @opened="opened" :close-on-click-modal="false">
+    <VueForm :formData="form_data" :formItme="form_item" :formHandler="form_handler">
+      <template v-slot:logo>
         <div class="upload-img-wrap">
           <div class="upload-img">
             <img v-show="logo_current" :src="logo_current" />
@@ -29,28 +15,19 @@
             </li>
           </ul>
         </div>
-      </el-form-item>
-      <el-form-item label="禁启用" prop="status">
-        <el-radio-group v-model="form.status">
-          <el-radio v-for="item in radio_disabled" :key="item.id" :label="item.value">{{ item.label }}</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="danger" @click="submit">确定</el-button>
-      </el-form-item>
-    </el-form>
-    <!-- <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
-    </div>-->
+      </template>
+    </VueForm>
   </el-dialog>
 </template>
 
 <script>
+// 组件
+import VueForm from "@c/form";
+// API
 import { BrandLogo, BrandAdd, BrandDetailed, BrandEdit } from "@/api/brand";
 export default {
   name: "",
-  components: {},
+  components: { VueForm },
   props: {
     flagVisible: {
       type: Boolean,
@@ -64,15 +41,31 @@ export default {
   data() {
     return {
       // 弹窗显示/关闭标记
-			dialogVisible: false,
-			// 表单
-      form: {
+      dialogVisible: false,
+      // 表单数据
+      form_data: {
         nameCh: "",
         nameEn: "",
         imgUrl: "",
         status: "",
         content: ""
       },
+      // 表单项
+      form_item: [
+        { type: "Input", label: "品牌中文", prop: "nameCh" },
+        { type: "Input", label: "品牌英文", prop: "nameEn" },
+        { type: "Slot", slotName: "logo", label: "LOGO" },
+        { 
+          type: "Radio", 
+          label: "禁启用", 
+          prop: "status",
+          options: this.$store.state.config.radio_disabled
+        },
+      ],
+      // 表单按钮
+      form_handler: [
+        { label: "确定", key: "submit",  type: "danger", handler: () => this.submit() }
+      ],
       // 状态
       radio_disabled: this.$store.state.config.radio_disabled,
       // 选中的LOGO
@@ -98,9 +91,9 @@ export default {
     },
     /** 获取详情 */
     getDetailed(){
-      this.form = this.data;
+      this.form_data = this.data;
       this.logo_current = this.data.imgUrl;
-      this.form.imgUrl = this.data.imgUrl;
+      this.form_data.imgUrl = this.data.imgUrl;
     },
     /** 提交 */
     submit(){
@@ -108,33 +101,45 @@ export default {
     },
     /** 添加 */
     add(){
-      BrandAdd(this.form).then(response => {
+      this.form_data.imgUrl = this.logo_current;
+      BrandAdd(this.form_data).then(response => {
         this.$message({
           type: "success",
           message: response.message
         })
-        this.reset("form");
+        this.close();
+        this.$emit("callbackComponent", {
+          function: "search"
+        })
       })
     },
      /** 修改 */
     edit(){
-      this.form.imgUrl = this.logo_current;
-      const requestData = JSON.parse(JSON.stringify(this.form));
+      this.form_data.imgUrl = this.logo_current;
+      const requestData = JSON.parse(JSON.stringify(this.form_data));
       BrandEdit(requestData).then(response => {
         this.$message({
           type: "success",
           message: response.message
         })
-        this.reset("form");
+        this.close();
+        this.$emit("callbackComponent", {
+          function: "search"
+        })
       })
     },
     /** 重置表单 */
     reset(formName){
-      this.$refs[formName].resetFields();
+      for(let key in this.form_data) {
+        this.form_data[key] = "";
+      }
       // 清除选中的LOGO
       this.logo_current = "";
     },
     close() {
+      this.reset("form");
+      // 关闭窗口
+      this.dialogVisible = false;
       this.$emit("update:flagVisible", false); // {}
     }
   },
