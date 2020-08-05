@@ -8,6 +8,7 @@ export function amapSetMarker(lnglat ,map){
         position: [lnglat.lng, lnglat.lat]
     })
     map.add(marker);
+    map.setFitView();
 }
 
 export function amapClearMarker(map){
