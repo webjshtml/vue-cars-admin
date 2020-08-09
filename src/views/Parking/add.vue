@@ -135,7 +135,7 @@ export default {
         /** 新增停车场API */
         addParking(){
             this.button_loading = true;
-            ParkingAdd(this.form).then(response => {
+            ParkingAdd(this.form_data).then(response => {
                 this.$message({
                     type: "primary",
                     message: response.message
@@ -196,7 +196,7 @@ export default {
         },
         /** 获取经纬度 */
         getLnglat(data){
-            this.form.lnglat = data.lnglat.value
+            this.form_data.lnglat = data.lnglat.value
         },
         setMapCenter(data){
             this.$refs.amap.setMapCenter(data.address);

@@ -12,15 +12,15 @@ export default {
        // 监听
        //watch(xxx, () => {})
        // 生命周期
-       onBeforeMount(() => {})
-       onMounted(() => {})
-       onBeforeUpdate(() => {})
-       onUpdated(() => {})
-       onBeforeUnmount(() => {})
-       onUnmounted(() => {})
-       onErrorCaptured(() => {})
-       onRenderTracked(() => {})
-       onRenderTriggered(() => {})
+    //    onBeforeMount(() => {})
+    //    onMounted(() => {})
+    //    onBeforeUpdate(() => {})
+    //    onUpdated(() => {})
+    //    onBeforeUnmount(() => {})
+    //    onUnmounted(() => {})
+    //    onErrorCaptured(() => {})
+    //    onRenderTracked(() => {})
+    //    onRenderTriggered(() => {})
        return {}
     }
 }
