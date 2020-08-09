@@ -124,22 +124,22 @@ export default {
       ],
       form: {
         parkingId: "",
-        carsBrandId:"",
+        carsBrandId: "",
         carsMode: "",
         carsNumber: "",
         carsFrameNumber: "",
         engineNumber: "",
-        yearCheck: true,
-        gear: true,
+        yearCheck: "",
+        gear: "",
         energyType: "",
         electric: "",
         oil: "",
         carsAttr: "",
         content: "",
         maintainDate: "",
-        status: true
+        status: ""
       }
-    }
+    };
   },
   mounted() {
     this.createEditor();
@@ -162,35 +162,5 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.progress-bar-wrap {
-    padding-left: 50px;
-    margin-top: 10px;
-    position: relative;
-    .label-text {
-        position: absolute;
-        left: 0;
-    }
-}
-.progress-bar {
-    height: 10px;
-    width: 100%;
-    border-radius: 50px;
-    background-color: #ccc;
-    margin-top: 15px;
-    span {
-        position: relative;
-        display: block;
-        height: 100%;
-        background-color: #409eff;
-        border-radius: 50px;
-    }
-    label {
-        position: absolute;
-        right: 0;
-        bottom: 10%;
-    }
-}
-.cars-attr-list {
-  margin-bottom: 15px;
-}
+@import "./style.scss";
 </style>

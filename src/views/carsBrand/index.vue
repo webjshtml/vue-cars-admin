@@ -91,7 +91,6 @@ export default {
   },
   methods: {
     callbackComponent(params){
-      console.log(params)
       if(params.function) { this[params.function](); }
     },
     /** 搜索 */
