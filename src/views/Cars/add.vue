@@ -78,7 +78,8 @@ export default {
           prop: "carsBrandId",
           select_vlaue: "id",   // 自有的私有属性
           select_label: "nameCh",
-          options: []
+          options: [],
+          required: true
         },
         { 
           type: "Select", 
@@ -87,31 +88,36 @@ export default {
           select_vlaue: "id",   // 自有的私有属性
           select_label: "parkingName",
           prop: "parkingId",
-          options: []
+          options: [],
+          required: true
         },
         { 
           type: "Input", 
           label: "车辆型号", 
           placeholder: "请输入车辆型号",
-          prop: "carsMode"
+          prop: "carsMode",
+          required: true
         },
         { 
           type: "Input", 
           label: "车牌号", 
           placeholder: "请输入车牌号",
-          prop: "carsNumber"
+          prop: "carsNumber",
+          required: true
         },
         { 
           type: "Input", 
           label: "车架号", 
           placeholder: "请输入车架号",
-          prop: "carsFrameNumber"
+          prop: "carsFrameNumber",
+          required: true
         },
         { 
           type: "Input", 
           label: "发动机号", 
           placeholder: "请输入发动机号",
-          prop: "engineNumber"
+          prop: "engineNumber",
+          required: true
         },
         { 
           type: "Radio", 
@@ -193,9 +199,19 @@ export default {
   methods: {
     formValidate() {
       this.formatCarsAttr();
-      CarsAdd(this.form_data).then(response => {
-        console.log(response)
-      })
+      this.$refs.vuForm.$refs.form.validate((valid) => {
+        if (valid) {
+            CarsAdd(this.form_data).then(response => {
+              this.$message({
+                message: response.data.message,
+                type: "success"
+              })
+            })
+        } else {
+            console.log('error submit!!');
+            return false;
+        }
+      });
     },
     // 获取车辆品牌
     getCarsBrandList(){

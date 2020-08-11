@@ -4,7 +4,7 @@
             <!-- Input-->
             <el-input v-if="item.type === 'Input'" v-model.trim="formData[item.prop]" :placeholder="item.placeholder" :style="{width: item.width}" :disabled="item.disabled"></el-input>
             <!-- Select-->
-            <el-select v-if="item.type === 'Select'" :aaaa="item.options" v-model.trim="formData[item.prop]" :placeholder="item.placeholder" :style="{width: item.width}" :disabled="item.disabled">
+            <el-select filterable v-if="item.type === 'Select'" :aaaa="item.options" v-model.trim="formData[item.prop]" :placeholder="item.placeholder" :style="{width: item.width}" :disabled="item.disabled">
                 <el-option v-for="selectItem in item.options" :key="selectItem.value || selectItem[item.select_vlaue]" :value="selectItem.value || selectItem[item.select_vlaue]" :label="selectItem.label || selectItem[item.select_label]"></el-option>
             </el-select>
             <!-- 禁启用 -->
@@ -57,7 +57,8 @@ export default {
             radio_disabled: this.$store.state.config.radio_disabled,
             type_msg: {
                 "Input": "请输入",
-                "Radio": "请选择"
+                "Radio": "请选择",
+                "Select": "请选择"
             }
         }
     },

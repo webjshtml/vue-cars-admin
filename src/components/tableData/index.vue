@@ -4,7 +4,7 @@
             <el-table-column v-if="table_config.checkbox" type="selection" width="35"></el-table-column>
             <template v-for="item in this.table_config.thead">
                 <!--回调-->
-                <el-table-column v-if="item.type === 'function'" :key="item.prop" :prop="item.prop" :label="item.label">
+                <el-table-column v-if="item.type === 'function'" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width">
                     <template slot-scope="scope">
                         <span v-html="item.callback && item.callback(scope.row, item.prop)"></span>
                     </template>
@@ -18,11 +18,11 @@
                 <!--图标显示 -->
                 <el-table-column v-else-if="item.type === 'image'" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width">
                     <template slot-scope="scope">
-                        <img :src="scope.row.imgUrl" :width="item.imgWidth || 50" alt="" />
+                        <img :src="scope.row[item.prop]" :width="item.imgWidth || 50" alt="" />
                     </template>
                 </el-table-column>
                 <!--纯文本渲染-->
-                <el-table-column v-else :key="item.prop" :prop="item.prop" :label="item.label"></el-table-column>
+                <el-table-column v-else :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width"></el-table-column>
             </template>
         </el-table>
         <el-row class="padding-top-30">
