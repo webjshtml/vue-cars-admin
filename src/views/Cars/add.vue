@@ -4,60 +4,44 @@
       <template v-slot:maintain>
           <el-row :gutter="30">
             <el-col :span="6">
-              <el-input v-model="form_data.maintainDate"></el-input>
+              <el-date-picker v-model="form_data.maintainDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期" style="width: 100%;"></el-date-picker>
             </el-col>
             <el-col :span="6">下次保养日期：2020-12-12</el-col>
           </el-row>
       </template>
       <template v-slot:energy>
-          <el-radio-group v-model="form_data.energyType">
-            <el-radio :label="1">电</el-radio>
-            <el-radio :label="2">油</el-radio>
-            <el-radio :label="3">混合动力</el-radio>
+          <el-radio-group v-model="form_data.energyType" @change="changeEnergyType">
+            <el-radio v-for="item in energyType" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
           </el-radio-group>
           <div class="progress-bar-wrap" v-if="form_data.energyType == 3 || form_data.energyType == 1">
             <span class="label-text">电量：</span>
-            <el-row :gutter="20">
-              <el-col :span="5">
-                <div class="progress-bar">
-                  <span style="width: 50%;">
-                    <label>{{form_data.electric}}%</label>
-                  </span>
-                </div>
-              </el-col>
-              <el-col :span="2">
-                <el-input size="small" value="100" v-model="form_data.electric"></el-input>
+            <el-row>
+              <el-col :span="10">
+                <el-slider v-model="form_data.electric" show-input></el-slider>
               </el-col>
             </el-row>
           </div>
           <div class="progress-bar-wrap" v-if="form_data.energyType == 3 || form_data.energyType == 2">
             <span class="label-text">油量：</span>
-            <el-row :gutter="20">
-              <el-col :span="5">
-                <div class="progress-bar">
-                  <span style="width: 50%;">
-                    <label>{{form_data.oil}}%</label>
-                  </span>
-                </div>
-              </el-col>
-              <el-col :span="2">
-                <el-input size="small" value="100" v-model="form_data.oil"></el-input>
+            <el-row>
+              <el-col :span="10">
+                <el-slider v-model="form_data.oil" show-input></el-slider>
               </el-col>
             </el-row>
           </div>
       </template>
       <template v-slot:carsAttr>
+        <el-button type="primary" @click="addCarsAttr">添加汽车属性</el-button>
           <div class="cars-attr-list" v-for="(item, index) in cars_attr" :key="item.key">
             <el-row :gutter="10">
               <el-col :span="2">
-                <el-input value="100"></el-input>
+                <el-input v-model="item.attr_key"></el-input>
               </el-col>
               <el-col :span="3">
-                <el-input value="100"></el-input>
+                <el-input v-model="item.attr_value"></el-input>
               </el-col>
               <el-col :span="6">
-                <el-button type="primary" v-if="index == 0" @click="addCarsAttr">+</el-button>
-                <el-button v-else>-</el-button>
+                <el-button @click="delCarsAttr(index)">删除</el-button>
               </el-col>
             </el-row>
           </div>
@@ -75,7 +59,7 @@ import Editor from "wangeditor";
 import VueForm from "@c/form";
 // API
 import { GetCarsBrand, GetParking } from "@/api/common";
-
+import { CarsAdd } from "@/api/cars";
 export default {
   name: "ParkingAdd",
   components: { VueForm },
@@ -83,12 +67,9 @@ export default {
     return {
       // 富文本对象
       editor: null,
-      cars_attr: [
-        { key1: 111, value1: 222 },
-        { key2: 111, value2: 222 },
-        { key3: 111, value3: 222 },
-        { key4: 111, value4: 222 }
-      ],
+      // 能源类型
+      energyType: this.$store.state.config.energyType,
+      cars_attr: [],
       form_item: [
         { 
           type: "Select", 
@@ -189,10 +170,10 @@ export default {
         carsFrameNumber: "",
         engineNumber: "",
         yearCheck: true,
-        gear: true,
-        energyType: "",
-        electric: "",
-        oil: "",
+        gear: 1,
+        energyType: 2,
+        electric: 100,
+        oil: 100,
         carsAttr: "",
         content: "",
         maintainDate: "",
@@ -211,7 +192,10 @@ export default {
   },
   methods: {
     formValidate() {
-      console.log("submit!");
+      this.formatCarsAttr();
+      CarsAdd(this.form_data).then(response => {
+        console.log(response)
+      })
     },
     // 获取车辆品牌
     getCarsBrandList(){
@@ -239,48 +223,42 @@ export default {
     },
     /** 添加车辆属性 */
     addCarsAttr() {
-      this.cars_attr.push({ key4: 111, value4: 222 });
+      this.cars_attr.push({ attr_key: "", attr_value: "" });
+    },
+    /** 删除车辆属性 */
+    delCarsAttr(index){
+      this.cars_attr.splice(index, 1); // 第一个参数：指定数组索引位置， 第二参数：从指定位置开始删除多少个。删除数组的指定元素
+    },
+    /** 车辆属性格式化 */
+    formatCarsAttr(){
+      const data = this.cars_attr;
+      if(data && data.length == 0) { return false; }
+      const carsAttr = {};
+      data.forEach(item => {
+        if(item.attr_key) {
+          carsAttr[item.attr_key] = item.attr_value
+        }
+      })
+      this.form_data.carsAttr = JSON.stringify(carsAttr);
     },
     /** 创建富文本对象 */
     createEditor() {
       this.editor = new Editor(this.$refs.editorDom);
-      this.editor.customConfig.onchange = html => {};
+      this.editor.customConfig.onchange = html => {
+        this.form_data.content = html;
+      };
       this.editor.create(); // 创建富文本实例
+    },
+    changeEnergyType(value){
+      this.form_data.oil = 0;
+      this.form_data.electric = 0;
     }
   }
 };
 </script>
 <style lang="scss">
-.progress-bar-wrap {
-    padding-left: 50px;
-    margin-top: 10px;
-    position: relative;
-    .label-text {
-        position: absolute;
-        left: 0;
-    }
-}
-.progress-bar {
-    height: 10px;
-    width: 100%;
-    border-radius: 50px;
-    background-color: #ccc;
-    margin-top: 15px;
-    span {
-        position: relative;
-        display: block;
-        height: 100%;
-        background-color: #409eff;
-        border-radius: 50px;
-    }
-    label {
-        position: absolute;
-        right: 0;
-        bottom: 10%;
-    }
-}
 .cars-attr-list {
-  margin-bottom: 15px;
+  margin-top: 15px;
   overflow: hidden;
 }
 </style>
