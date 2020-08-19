@@ -11,12 +11,16 @@
             <el-radio-group v-if="item.type === 'Disabled'" v-model="formData[item.prop]">
                 <el-radio v-for="radio in radio_disabled" :label="radio.value" :key="radio.value">{{ radio.label }}</el-radio>
             </el-radio-group>
-            <!-- 省市区 -->
+            <!-- slot -->
             <slot v-if="item.type === 'Slot'" :name="item.slotName" />
             <!-- 省市区 -->
             <el-radio-group v-if="item.type === 'Radio'" v-model="formData[item.prop]">
                 <el-radio v-for="radio in item.options" :label="radio.value" :key="radio.value">{{ radio.label }}</el-radio>
             </el-radio-group>
+            <!-- 富文本编辑器 -->
+            <template v-if="item.type === 'Wangeditor'">
+                <Wangeditor :isClear="wangeditorClear" ref="wangeditor" :value="formData[item.prop]" :content.sync="formData[item.prop]" />
+            </template>
         </el-form-item>
         <!-- 按钮 -->
         <el-form-item>
@@ -29,9 +33,11 @@
 <script>
 // 省市区
 import CityArea from "@c/common/cityArea";
+// 富文本
+import Wangeditor from "@c/common/wangeditor";
 export default {
     name: "Form",
-    components: { CityArea },
+    components: { CityArea, Wangeditor },
     props: {
         labelWidth: {
             type: String,
@@ -59,10 +65,18 @@ export default {
                 "Input": "请输入",
                 "Radio": "请选择",
                 "Select": "请选择"
-            }
+            },
+            // 清除富文本
+            wangeditorClear: false  // true false
         }
     },
     methods: {
+        /** 重置表单 */
+        resetForm(){
+            this.$refs.form.resetFields();
+            // 清除富文本内容
+            if(this.$refs.wangeditor) { this.wangeditorClear = !this.wangeditorClear; }
+        },
         initFormData(){
             this.formItme.forEach(item => {
                 // rules 规则

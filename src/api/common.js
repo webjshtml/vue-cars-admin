@@ -23,6 +23,17 @@ export function GetTableData(params = {}){
 }
 
 /**
+ * 删除列表
+ */
+export function Delete(params = {}){
+    return service.request({
+        method: "post",
+        url: requestUrl[params.url],
+        data: params.data
+    })
+}
+
+/**
  * 获取车辆品牌
  */
 export function GetCarsBrand(data = {}){

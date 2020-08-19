@@ -1,6 +1,6 @@
 <template>
   <div class="parking-add">
-    <VueForm ref="vuForm" :formData="form_data" :formItme="form_item" :formHandler="form_handler">
+    <VueForm ref="vueForm" :formData="form_data" :formItme="form_item" :formHandler="form_handler">
       <template v-slot:maintain>
           <el-row :gutter="30">
             <el-col :span="6">
@@ -46,25 +46,22 @@
             </el-row>
           </div>
       </template>
-      <template v-slot:content>
-          <div ref="editorDom" style="text-align: left;"></div>
-      </template>
     </VueForm>
   </div>
 </template>
 <script>
-// 富文本编辑器
-import Editor from "wangeditor";
 // 组件
 import VueForm from "@c/form";
 // API
 import { GetCarsBrand, GetParking } from "@/api/common";
-import { CarsAdd } from "@/api/cars";
+import { CarsAdd, CarsDetailed, CarsEdit } from "@/api/cars";
 export default {
   name: "ParkingAdd",
   components: { VueForm },
   data() {
     return {
+      // id
+      id: this.$route.query.id,
       // 富文本对象
       editor: null,
       // 能源类型
@@ -158,8 +155,7 @@ export default {
           label: "车辆属性"
         },
         { 
-          type: "Slot", 
-          slotName: "content", 
+          type: "Wangeditor", 
           prop:"content", 
           label: "车辆描述"
         },
@@ -192,26 +188,40 @@ export default {
   beforeMount(){
     this.getCarsBrandList();
     this.getParkingList();
+    this.getDetailed();
   },
-  mounted() {
-    this.createEditor();
-  },
+  mounted() {},
   methods: {
     formValidate() {
       this.formatCarsAttr();
-      this.$refs.vuForm.$refs.form.validate((valid) => {
+      this.$refs.vueForm.$refs.form.validate((valid) => {
         if (valid) {
-            CarsAdd(this.form_data).then(response => {
-              this.$message({
-                message: response.data.message,
-                type: "success"
-              })
-            })
+            this.id ? this.edit() : this.add();
         } else {
             console.log('error submit!!');
             return false;
         }
       });
+    },
+    /** edit */
+    edit(){
+      CarsEdit({...this.form_data, id: this.id}).then(response => {
+        this.$message({
+          message: response.message,
+          type: "success"
+        })
+      })
+    },
+    add(){
+      CarsAdd(this.form_data).then(response => {
+        this.$message({
+          message: response.message,
+          type: "success"
+        })
+        this.$refs.vueForm.resetForm();
+        this.cars_attr = [];
+        this.form_data.content = "";
+      })
     },
     // 获取车辆品牌
     getCarsBrandList(){
@@ -237,6 +247,31 @@ export default {
         }
       })
     },
+    /** 获取详情 */
+    getDetailed(){
+      if(!this.id) { return false; }
+      CarsDetailed({id: this.id}).then(response => {
+        const data = response.data;
+        if(!data) { return false };
+        for(let key in data) {
+          if(Object.keys(this.form_data).includes(key)) {
+            this.form_data[key] = data[key];
+          }
+        }
+        const carsAttr = JSON.parse(data.carsAttr);
+        const arr = [];
+        for(let key in carsAttr) {
+          const json = {}
+          json.attr_key = key;
+          json.attr_value = carsAttr[key];
+          // { attr_key: "", attr_value: "" }
+          arr.push(json)
+        }
+        this.cars_attr = arr;
+
+        // { attr_key: "", attr_value: "" }
+      })
+    },
     /** 添加车辆属性 */
     addCarsAttr() {
       this.cars_attr.push({ attr_key: "", attr_value: "" });
@@ -257,14 +292,7 @@ export default {
       })
       this.form_data.carsAttr = JSON.stringify(carsAttr);
     },
-    /** 创建富文本对象 */
-    createEditor() {
-      this.editor = new Editor(this.$refs.editorDom);
-      this.editor.customConfig.onchange = html => {
-        this.form_data.content = html;
-      };
-      this.editor.create(); // 创建富文本实例
-    },
+    
     changeEnergyType(value){
       this.form_data.oil = 0;
       this.form_data.electric = 0;

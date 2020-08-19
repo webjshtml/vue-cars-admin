@@ -21,6 +21,22 @@
                         <img :src="scope.row[item.prop]" :width="item.imgWidth || 50" alt="" />
                     </template>
                 </el-table-column>
+                <!--操作 -->
+                <el-table-column v-else-if="item.type === 'operation'" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width">
+                    <template slot-scope="scope">
+                        <!--编辑-->
+                        <template v-if="item.default && item.default.editButton">
+                            <el-button  v-if="item.default.editButtonEvent" type="danger" size="small" @click="edit(scope.row[item.default.id || 'id'], item.default.editButtonLink)">编辑</el-button>
+                            <router-link v-else :to="{name: item.default.editButtonLink, query: { id: scope.row[item.default.id || 'id'] }}" class="mr-10">
+                                <el-button type="danger" size="small">编辑</el-button>
+                            </router-link>
+                        </template>
+                        <!--删除-->
+                        <el-button size="small" v-if="item.default && item.default.deleteButton" :loading="scope.row.id == rowId" @click="delConfirm(scope.row.id)">删除</el-button>
+                        <!--额外-->
+                        <slot v-if="item.slotName" :name="item.slotName" :data="scope.row"></slot>
+                    </template>
+                </el-table-column>
                 <!--纯文本渲染-->
                 <el-table-column v-else :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width"></el-table-column>
             </template>
@@ -46,8 +62,10 @@
 </template>
 <script>
 // API
-import { GetTableData } from "@/api/common";
+import { GetTableData, Delete } from "@/api/common";
 import { ParkingList } from "@/api/parking";
+// API
+import { CarsDelete } from "@/api/cars";
 export default {
     name: "TableComponent",
     data(){
@@ -67,6 +85,8 @@ export default {
             total: 0,
             // 当前页码
             currentPage: 1,
+            // rowId
+            rowId: ""
         }
     },
     beforeMount(){},
@@ -116,7 +136,43 @@ export default {
         handleCurrentChange(val){
             this.table_config.data.pageNumber = val;
             this.loadData();
-        }
+        },
+        /**
+         * 删除
+         */
+        delConfirm(id){
+            this.$confirm('确定删除此信息', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.rowId = id;
+                let requestData = {
+                    url: this.table_config.url + "Delete",
+                    data: { id },
+                }
+                Delete(requestData).then(response => {
+                    this.$message({
+                        type: 'success',
+                        message: response.message
+                    });
+                    this.rowId = "";
+                    // 调用子组件的方法
+                    this.loadData();
+                }).cacth(error => {
+                    this.rowId = "";
+                })
+            }).catch(() => {});
+        },
+        /** 编辑 */
+        edit(id, routerNmae){
+            this.$router.push({
+                name: routerNmae,
+                query: {
+                    id
+                }
+            })
+        },
     },
     props: {
         config: {
@@ -135,5 +191,5 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-
+.mr-10 { margin-right: 10px; }
 </style>
