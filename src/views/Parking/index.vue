@@ -39,7 +39,6 @@
                     </div>
                 </el-col>
             </el-row>
-            
         </div>
         <TabalData ref="table" :config="table_config">
             <!--禁启用-->
@@ -49,11 +48,6 @@
             <!--查看地图-->
             <template v-slot:lnglat="slotData">
                 <el-button type="success" size="mini" @click="showMap(slotData.data)">查看地图</el-button>
-            </template>
-            <!--操作-->
-            <template v-slot:operation="slotData">
-                <el-button type="danger" size="small" @click="edit(slotData.data.id)">编辑</el-button>
-                <el-button size="small" :loading="slotData.data.id == rowId" @click="delConfirm(slotData.data.id)">删除</el-button>
             </template>
         </TabalData>
         <MapLocation :flagVisible.sync="map_show" :data="parking_data" />
@@ -103,8 +97,12 @@ export default {
                     },
                     { 
                         label: "操作",
-                        type: "slot",
-                        slotName: "operation"
+                        type: "operation",
+                        default: {
+                            deleteButton: true,
+                            editButton: true,
+                            editButtonLink: "ParkingAdd"
+                        }
                     }
                 ],
                 url: "parkingList",  // 真实URL请求地址
@@ -157,36 +155,6 @@ export default {
             if(this.keyword && this.search_key) { requestData[this.search_key] = this.keyword; }
             // 调用子组件的方法
             this.$refs.table.requestData(requestData);
-        },
-        /** 编辑 */
-        edit(id){
-            this.$router.push({
-                name: "ParkingAdd",
-                query: {
-                    id
-                }
-            })
-        },
-        /** 删除 */
-        delConfirm(id){
-            this.$confirm('确定删除此信息', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                this.rowId = id;
-                ParkingDelete({id}).then(response => {
-                    this.$message({
-                        type: 'success',
-                        message: response.message
-                    });
-                    this.rowId = "";
-                    // 调用子组件的方法
-                    this.$refs.table.requestData();
-                }).cacth(error => {
-                    this.rowId = "";
-                })
-            }).catch(() => {});
         },
         /** 禁启用 */
         switchChange(data){

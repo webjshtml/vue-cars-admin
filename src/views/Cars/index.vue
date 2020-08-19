@@ -33,7 +33,7 @@
                 </el-col>
                 <el-col :span="3">
                     <div class="pull-right">
-                        <router-link to="/parkingAdd">
+                        <router-link to="/carsAdd">
                             <el-button type="danger">新增停车场</el-button>
                         </router-link>
                     </div>
@@ -46,11 +46,6 @@
             <template v-slot:status="slotData">
                 <el-switch :disabled="slotData.data.id == switch_disabled" @change="switchChange(slotData.data)" v-model="slotData.data.status" active-color="#13ce66" inactive-color="#ff4949"> </el-switch>
             </template>
-            <!--操作-->
-            <template v-slot:operation="slotData">
-                <el-button type="danger" size="small" @click="edit(slotData.data.id)">编辑</el-button>
-                <el-button size="small" :loading="slotData.data.id == rowId" @click="delConfirm(slotData.data.id)">删除</el-button>
-            </template>
         </TabalData>
         <MapLocation :flagVisible.sync="map_show" :data="parking_data" />
     </div>
@@ -61,11 +56,11 @@ import CityArea from "@c/common/cityArea";
 import MapLocation from "@c/dialog/showMapLocation";
 import TabalData from "@c/tableData";
 // API
-import { ParkingDelete, ParkingStatus } from "@/api/parking";
+import { CarsStatus } from "@/api/cars";
 // common
 import { address, yearCheckType, energyType } from "@/utils/common";
 export default {
-    name: "Parking",
+    name: "Cars",
     data(){
         return {
             // 表格配置
@@ -108,8 +103,12 @@ export default {
                     },
                     { 
                         label: "操作",
-                        type: "slot",
-                        slotName: "operation"
+                        type: "operation",
+                        default: {
+                            deleteButton: true,
+                            editButton: true,
+                            editButtonLink: "CarsAdd"
+                        }
                     }
                 ],
                 url: "carsList",  // 真实URL请求地址
@@ -163,36 +162,6 @@ export default {
             // 调用子组件的方法
             this.$refs.table.requestData(requestData);
         },
-        /** 编辑 */
-        edit(id){
-            this.$router.push({
-                name: "ParkingAdd",
-                query: {
-                    id
-                }
-            })
-        },
-        /** 删除 */
-        delConfirm(id){
-            this.$confirm('确定删除此信息', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                this.rowId = id;
-                ParkingDelete({id}).then(response => {
-                    this.$message({
-                        type: 'success',
-                        message: response.message
-                    });
-                    this.rowId = "";
-                    // 调用子组件的方法
-                    this.$refs.table.requestData();
-                }).cacth(error => {
-                    this.rowId = "";
-                })
-            }).catch(() => {});
-        },
         /** 禁启用 */
         switchChange(data){
             if(this.switch_flag) { return false; }
@@ -202,7 +171,7 @@ export default {
             }
             // this.switch_flag = true;
             this.switch_disabled = data.id;  // 第一种方式：组件本身的属性处理
-            ParkingStatus(requestData).then(response => {
+            CarsStatus(requestData).then(response => {
                 this.$message({
                     type: 'success',
                     message: response.message
