@@ -1,46 +1,5 @@
 <template>
     <div>
-        <div class="filter-form">
-            <el-row>
-                <el-col :span="21">
-                    <el-form :inline="true" :model="form" class="demo-form-inline">
-                        <el-form-item label="区域">
-                           <CityArea ref="cityArea" :cityAreaValue.sync="form.area" @callback="callbackComponent" />
-                        </el-form-item>
-                        <el-form-item label="类型">
-                            <el-select v-model="form.type" placeholder="停车场" class="width-120">
-                                <el-option v-for="item in parking_type" :label="item.label" :value="item.value" :key="item.value"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="禁启用">
-                            <el-select v-model="form.status" placeholder="请选择" class="width-120">
-                                <el-option v-for="item in parking_status" :label="item.label" :value="item.value" :key="item.value"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="关键字">
-                            <el-select v-model="search_key" placeholder="请选择" class="width-120">
-                                <el-option label="停车场名称" value="parkingName"></el-option>
-                                <el-option label="详细区域" value="address"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item >
-                            <el-input v-model="keyword" placeholder="请输入关键字按Enter搜索"></el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="danger" @click="search">搜索</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-col>
-                <el-col :span="3">
-                    <div class="pull-right">
-                        <router-link to="/carsAdd">
-                            <el-button type="danger">新增停车场</el-button>
-                        </router-link>
-                    </div>
-                </el-col>
-            </el-row>
-            
-        </div>
         <TabalData ref="table" :config="table_config">
             <!--禁启用-->
             <template v-slot:status="slotData">
@@ -125,9 +84,6 @@ export default {
             },
             switch_disabled: "",
             switch_flag: false,
-            //
-            search_key: "",
-            keyword: "",
             // 禁启用
             parking_status: this.$store.state.config.radio_disabled,
             // 停车场类型
@@ -143,24 +99,6 @@ export default {
     methods: {
         callbackComponent(params){
             if(params.function) { this[params.function](params.data); }
-        },
-        /** search */
-        search(){
-            const requestData = {
-                pageSize: 10,
-                pageNumber: 1
-            }
-            // 过滤筛选
-            const filterData = JSON.parse(JSON.stringify(this.form));
-            for(let key in filterData) {
-                if(filterData[key]) {
-                    requestData[key] = filterData[key];
-                }
-            }
-            // 关键字
-            if(this.keyword && this.search_key) { requestData[this.search_key] = this.keyword; }
-            // 调用子组件的方法
-            this.$refs.table.requestData(requestData);
         },
         /** 禁启用 */
         switchChange(data){
@@ -196,6 +134,4 @@ export default {
 }
 
 </script>
-<style lass="scss" scoped>
-
-</style>
+<style lass="scss" scoped></style>

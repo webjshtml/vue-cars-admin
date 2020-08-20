@@ -1,5 +1,6 @@
 <template>
     <div>
+        <FormSearch :formItme="form_item" @callbackComponent="callbackComponent" />
         <el-table v-loading="loading_table" element-loading-text="加载中" :data="table_data" border style="width: 100%">
             <el-table-column v-if="table_config.checkbox" type="selection" width="35"></el-table-column>
             <template v-for="item in this.table_config.thead">
@@ -61,6 +62,8 @@
     </div>
 </template>
 <script>
+// 组件
+import FormSearch from "@/components/formSearch";
 // API
 import { GetTableData, Delete } from "@/api/common";
 import { ParkingList } from "@/api/parking";
@@ -68,6 +71,7 @@ import { ParkingList } from "@/api/parking";
 import { CarsDelete } from "@/api/cars";
 export default {
     name: "TableComponent",
+    components: { FormSearch },
     data(){
         return {
             // 加载提示
@@ -86,11 +90,28 @@ export default {
             // 当前页码
             currentPage: 1,
             // rowId
-            rowId: ""
+            rowId: "",
+            // form_item
+            form_item: [
+                { label: "城市", type: "City" },
+                { label: "类型", prop: "parkingType", type: "Select", width: '120px', options: "parking_type"  },
+                { label: "禁启用", prop: "status", type: "Select", width: '120px', options: "radio_disabled" },
+                { label: "关键字",  type: "Keyword" },
+            ],
+            form_data: {}
         }
     },
     beforeMount(){},
     methods: {
+        callbackComponent(params){
+            this[params.function](params.data);
+        },
+        search(data){
+            const searchData = data;
+            searchData.pageNumber = 1;
+            searchData.pageSize = 10;
+            this.requestData(searchData);
+        },
         /** table config */
         initConfig(){
             for(let key in this.config) {
