@@ -1,6 +1,12 @@
 <template>
     <div>
-        <FormSearch :formItme="form_item" @callbackComponent="callbackComponent" />
+        <FormSearch 
+        v-if="table_config.search_form"
+        :formItme="table_config.form_item" 
+        :formHandler="table_config.form_handler" 
+        :formConfig="table_config.form_config"
+        @callbackComponent="callbackComponent"
+        />
         <el-table v-loading="loading_table" element-loading-text="加载中" :data="table_data" border style="width: 100%">
             <el-table-column v-if="table_config.checkbox" type="selection" width="35"></el-table-column>
             <template v-for="item in this.table_config.thead">
@@ -83,7 +89,14 @@ export default {
                 checkbox: true,
                 url: "",
                 pagination: true,
-                data: {}
+                data: {},
+                search_form:  true,
+                // form
+                form_item: [],
+                form_handler: [],
+                form_config: {
+                    resetButton: false
+                }
             },
             // 页码
             total: 0,
@@ -91,13 +104,6 @@ export default {
             currentPage: 1,
             // rowId
             rowId: "",
-            // form_item
-            form_item: [
-                { label: "城市", type: "City" },
-                { label: "类型", prop: "parkingType", type: "Select", width: '120px', options: "parking_type"  },
-                { label: "禁启用", prop: "status", type: "Select", width: '120px', options: "radio_disabled" },
-                { label: "关键字",  type: "Keyword" },
-            ],
             form_data: {}
         }
     },
@@ -198,8 +204,14 @@ export default {
     props: {
         config: {
             type: Object,
-            default: () => {}
-        }
+            default: () => ({})
+        },
+        searchFormConfig: {
+            type: Object,
+            default: function(){
+                return {};
+            }
+        },
     },
     watch: {
         config: {

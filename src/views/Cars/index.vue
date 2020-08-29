@@ -23,13 +23,18 @@ export default {
     data(){
         return {
             // 表格配置
-            table_config: {
+            table_config:{
                 thead: [
                     { label: "车牌号", prop: "carsMode" },
                     { label: "车辆品牌", prop: "nameCh" },
                     { 
                         label: "车辆LOGO", 
                         prop: "imgUrl",
+                        type: "image"
+                    },
+                    { 
+                        label: "车辆图片", 
+                        prop: "carsImg",
                         type: "image"
                     },
                     { 
@@ -74,13 +79,20 @@ export default {
                 data: {
                     pageSize: 10,
                     pageNumber: 1
+                },
+                form_item: [
+                    { label: "城市", type: "City" },
+                    { label: "类型", prop: "parkingType", type: "Select", width: '120px', options: "parking_type"  },
+                    { label: "禁启用", prop: "status", type: "Select", width: '120px', options: "radio_disabled" },
+                    { label: "关键字",  type: "Keyword" },
+                ],
+                form_handler: [
+                    { label: "新增", prop: "add", type: "success", element: "link", router: "/carsAdd" },
+                    { label: "下载", prop: "down", type: "success", element: "button", handler: () => this.aaaa() },
+                ],
+                form_config: {
+                    resetButton: true
                 }
-            },
-            // 筛选
-            form: {
-                area: "",
-                type: "",
-                status: ""
             },
             switch_disabled: "",
             switch_flag: false,
@@ -125,8 +137,12 @@ export default {
         showMap(data){
             this.map_show = true;
             this.parking_data = data;
+        },
+        aaaa(){
+            alert(1111)
         }
     },
+    
     // DOM元素渲染之前（生命周期）
     beforeMount(){},
     // DOM元素渲染完成（生命周期）

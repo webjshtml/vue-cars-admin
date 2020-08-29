@@ -21,6 +21,10 @@
             <template v-if="item.type === 'Wangeditor'">
                 <Wangeditor :isClear="wangeditorClear" ref="wangeditor" :value="formData[item.prop]" :content.sync="formData[item.prop]" />
             </template>
+            <!-- 文件上传 -->
+            <template v-if="item.type === 'Upload'">
+                <Upload :imgUrl="formData[item.prop]" :value.sync="formData[item.prop]" />
+            </template>
         </el-form-item>
         <!-- 按钮 -->
         <el-form-item>
@@ -35,9 +39,11 @@
 import CityArea from "@c/common/cityArea";
 // 富文本
 import Wangeditor from "@c/common/wangeditor";
+// upload
+import Upload from "@c/upload";
 export default {
     name: "Form",
-    components: { CityArea, Wangeditor },
+    components: { CityArea, Wangeditor, Upload },
     props: {
         labelWidth: {
             type: String,

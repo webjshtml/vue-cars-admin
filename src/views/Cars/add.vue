@@ -110,6 +110,13 @@ export default {
           required: true
         },
         { 
+          type: "Upload", 
+          label: "缩略图", 
+          placeholder: "请上传缩略图",
+          prop: "carsImg",
+          required: true
+        },
+        { 
           type: "Input", 
           label: "发动机号", 
           placeholder: "请输入发动机号",
@@ -171,6 +178,7 @@ export default {
         carsNumber: "",
         carsFrameNumber: "",
         engineNumber: "",
+        carsImg: "",
         yearCheck: true,
         gear: 1,
         energyType: 2,
@@ -182,7 +190,11 @@ export default {
         status: true
       },
       // 车辆品牌列表
-      carsBrandList: []
+      carsBrandList: [],
+      // 上传文件配置
+      uploadData: {
+        token: ""
+      }
     }
   },
   beforeMount(){
@@ -258,6 +270,7 @@ export default {
             this.form_data[key] = data[key];
           }
         }
+        console.log(this.form_data)
         const carsAttr = JSON.parse(data.carsAttr);
         const arr = [];
         for(let key in carsAttr) {
@@ -292,7 +305,6 @@ export default {
       })
       this.form_data.carsAttr = JSON.stringify(carsAttr);
     },
-    
     changeEnergyType(value){
       this.form_data.oil = 0;
       this.form_data.electric = 0;

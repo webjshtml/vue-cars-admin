@@ -21,9 +21,23 @@
         <!-- 按钮 -->
         <el-form-item>
             <el-button type="danger" @click="search">搜索</el-button>
-            <el-button v-for="item in formHandler" :key="item.key" :type="item.type" @click="item.handler && item.handler()">
-                {{ item.label }}
-            </el-button>
+            <el-button type="danger" @click="reset" v-if="formConfig.resetButton">重置</el-button>
+            <template v-for="item in formHandler">
+                <el-button v-if="item.element === 'link'" :key="item.key" :type="item.type">
+                    <router-link  :to="item.router" >
+                        {{ item.label }}
+                    </router-link>
+                </el-button>
+                <el-button v-if="item.element === 'button'" :key="item.key" :type="item.type" @click="item.handler && item.handler()">
+                    {{ item.label }}
+                </el-button>
+
+
+                <!-- <el-button v-for="item in formHandler" :key="item.key" :type="item.type" @click="item.handler && item.handler()">
+                        {{ item.label }}
+                    </el-button> -->
+            </template>
+           
         </el-form-item>
     </el-form>
 </template>
@@ -43,6 +57,10 @@ export default {
         formHandler: {
             type: Array,
             default: () => []
+        },
+        formConfig: {
+            type: Object,
+            default: () => {}
         }
     },
     data(){
@@ -78,6 +96,14 @@ export default {
                 data: searchData
             })
         },
+        /** 重置 */
+        reset(){
+            this.$refs.form.resetFields();
+            // 城市组件
+            if(this.$refs.city[0]) { this.$refs.city[0].clear(); }
+            // 关键字
+            if(this.$refs.keyword[0]) { this.$refs.keyword[0].clear(); }
+        },
         initFormData(){
             this.formItme.forEach(item => {
                 // 读取下拉选项的数据
@@ -105,6 +131,8 @@ export default {
     watch: {
         formItme: {
             handler(newValue){
+                console.log('newValuenewValuenewValuenewValuenewValue')
+                console.log(newValue)
                 this.initFormData()
                 this.initFormFelid();
             },

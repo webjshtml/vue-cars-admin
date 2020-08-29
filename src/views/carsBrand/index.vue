@@ -1,24 +1,5 @@
 <template>
   <div>
-    <div class="filter-form">
-      <el-row>
-        <el-col :span="18">
-          <el-form :inline="true" :model="form" class="demo-form-inline" label-width="100px">
-            <el-form-item label="车辆品牌：">
-              <el-input v-model="form.brand" placeholder="请输入品牌"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="danger" @click="search">搜索</el-button>
-            </el-form-item>
-          </el-form>
-        </el-col>
-        <el-col :span="6">
-          <div class="pull-right">
-            <el-button type="danger" @click="dialog_show = true">新增车辆品牌</el-button>
-          </div>
-        </el-col>
-      </el-row>
-    </div>
     <!-- 表格数据 -->
     <TabalData ref="table" :config="table_config">
       <template v-slot:status="slotData">
@@ -77,6 +58,15 @@ export default {
         data: {
           pageSize: 10,
           pageNumber: 1
+        },
+        form_item: [
+          { label: "车辆品牌", prop: "brand", type: "Input", width: '150px', options: "parking_type", placeholder: "请输入车辆品牌"  },
+        ],
+        form_handler: [
+            { label: "新增车辆品牌", prop: "add", type: "danger", element: "button", handler: ()  => { this.dialog_show = true } },
+        ],
+        form_config: {
+            resetButton: true
         }
       },
       // row_id

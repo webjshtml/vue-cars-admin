@@ -90,6 +90,7 @@ export default {
 			}
 		},
 		clear(){
+			console.log(11111)
 			this.value = "";
 		}
 	},
