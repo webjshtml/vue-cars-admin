@@ -1,5 +1,5 @@
 <template>
-    <el-cascader :class="{'cascader-input' : initValueFlag}" :placeholder="initValue" v-model="value" :options="cascader_options" :props="cascader_props" @change="changeValue"></el-cascader>
+    <el-cascader filterable :class="{'cascader-input' : initValueFlag}" :placeholder="initValue" v-model="value" :options="cascader_options" :props="cascader_props" @change="changeValue"></el-cascader>
 </template>
 
 <script>
@@ -90,6 +90,7 @@ export default {
 			}
 		},
 		clear(){
+			console.log(11111)
 			this.value = "";
 		}
 	},
