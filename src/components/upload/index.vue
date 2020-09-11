@@ -30,9 +30,9 @@ export default {
 		getQiniuToken() {
 			// 在工作中，
 			const requestData = {
-				ak: "Ef2A2AIv0WHGYfp1BCgPdcdqzK6gqXaVi6IoQztk",
-				sk: "zPSWROJi7SPDe_MqIPoksMY-JVYep9x9l5LHMBMj",
-				buckety: "webnct"
+				ak: "5F2rCgyOj6l8_EvHLu5ENzWVtABbCe8iXs6IileX",
+				sk: "h7z4Pw3jOjkW3OQqIG1CVxx3APkokt4IVctLg78n",
+				buckety: "bigbigtime"
 			};
 			GetQiniuToken(requestData).then(response => {
 				const data = response.data;
@@ -42,7 +42,7 @@ export default {
 			});
 		},
 		handleAvatarSuccess(res, file) {
-			this.imageUrl = `http://qff6p8hrd.hn-bkt.clouddn.com/${res.key}`;
+			this.imageUrl = `http://qggv6kp6m.hn-bkt.clouddn.com/${res.key}`;
 			this.$emit("update:value", this.imageUrl)
 		},
 		// 上传之前

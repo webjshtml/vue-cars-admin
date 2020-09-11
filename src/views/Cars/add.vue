@@ -22,7 +22,7 @@
             </el-row>
           </div>
           <div class="progress-bar-wrap" v-if="form_data.energyType == 3 || form_data.energyType == 2">
-            <span class="label-text">油量：</span>
+            <span class="label-text">油量：可行驶公里：{{ oilKm }}</span>
             <el-row>
               <el-col :span="10">
                 <el-slider v-model="form_data.oil" show-input></el-slider>
@@ -150,6 +150,28 @@ export default {
           label: "能源类型"
         },
         { 
+          type: "Input", 
+          label: "可行驶公里", 
+          placeholder: "KM",
+          prop: "oilKm",
+          required: true,
+          disabled: true
+        },
+        { 
+          type: "Input", 
+          label: "耗油量", 
+          placeholder: "请输入油量（L）",
+          prop: "oilConsume",
+          required: true
+        },
+        { 
+          type: "Input", 
+          label: "油箱容积", 
+          placeholder: "请输入油量（L）",
+          prop: "oilBox",
+          required: true
+        },
+        { 
           type: "Disabled", 
           label: "禁启用", 
           placeholder: "请选择禁启用",
@@ -187,7 +209,10 @@ export default {
         carsAttr: "",
         content: "",
         maintainDate: "",
-        status: true
+        status: true,
+        oilConsume: 7.8,
+        oilBox: 56,
+        oilKm: 0
       },
       // 车辆品牌列表
       carsBrandList: [],
@@ -195,6 +220,13 @@ export default {
       uploadData: {
         token: ""
       }
+    }
+  },
+  computed: {
+    oilKm(){
+      let number = this.form_data.oilBox / this.form_data.oilConsume * this.form_data.oil;
+      this.form_data.oilKm = number.toFixed(2);
+      return number.toFixed(2);
     }
   },
   beforeMount(){
