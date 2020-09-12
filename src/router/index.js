@@ -96,6 +96,14 @@ const routes = [
     component: Layout,
     children: [
       {
+        path: "/carsAttr",
+        name: "CarsAttr",
+        meta: {
+          title: "车辆属性"
+        },
+        component: () => import("../views/Cars/attrList.vue"),
+      },
+      {
         path: "/carsIndex",
         name: "CarsIndex",
         meta: {

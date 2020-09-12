@@ -41,7 +41,9 @@ const state = {
     // 关键字搜索
     keyword_options: [
         { label: "停车场名称", value: "parkingName" },
-        { label: "详细区域", value: "address" }
+        { label: "详细区域", value: "address" },
+        { label: "字段", value: "key" },
+        { label: "文本", value: "value" },
     ]
 }
 export default {

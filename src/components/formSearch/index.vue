@@ -13,7 +13,7 @@
             </div>
             <!-- city-->
             <div v-if="item.type === 'Keyword'">
-                <KeyWord ref="keyword" :options="['address', 'parkingName']" :value.sync="keyword" />
+                <KeyWord ref="keyword" :options="item.options" :value.sync="keyword" />
             </div>
             <!-- slot -->
             <slot v-if="item.type === 'Slot'" :name="item.slotName" />

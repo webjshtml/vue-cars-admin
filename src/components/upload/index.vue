@@ -61,10 +61,17 @@ export default {
 			return isJPG && isLt2M;
 		}
 	},
-	props: {
+	props: {  // 接收到的数据属于“静态数据”，是单向数据，不能反向修改
 		imgUrl: {
 			type: String,
 			default: ""
+		}
+	},
+	watch: {
+		imgUrl: {
+			handler(newValue){
+				this.imageUrl = newValue;
+			}
 		}
 	}
 };
