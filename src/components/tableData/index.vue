@@ -81,7 +81,6 @@ export default {
     components: { FormSearch },
     data(){
         return {
-            
             // 加载提示
             loading_table: false,
             // tableData

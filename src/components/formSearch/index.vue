@@ -25,7 +25,7 @@
             <template v-for="item in formHandler">
                 <el-button v-if="item.element === 'link'" :key="item.key" :type="item.type">
                     <router-link  :to="item.router" >
-                        {{ item.label }}
+                        <span class="color-white">{{ item.label }}</span>
                     </router-link>
                 </el-button>
                 <el-button v-if="item.element === 'button'" :key="item.key" :type="item.type" @click="item.handler && item.handler()">

@@ -17,3 +17,12 @@ export function GetCarsTypeList(data = {}){
         data
     })
 }
+
+/** 获取车辆自定义属性 */
+export function CarsTypeAdd(data = {}){
+    return service.request({
+        method: "post",
+        url: "/carsAttr/add/",
+        data
+    })
+}
