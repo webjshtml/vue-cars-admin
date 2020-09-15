@@ -31,20 +31,7 @@
           </div>
       </template>
       <template v-slot:carsAttr>
-        <el-button type="primary" @click="addCarsAttr">添加汽车属性</el-button>
-          <div class="cars-attr-list" v-for="(item, index) in cars_attr" :key="item.key">
-            <el-row :gutter="10">
-              <el-col :span="2">
-                <el-input v-model="item.attr_key"></el-input>
-              </el-col>
-              <el-col :span="3">
-                <el-input v-model="item.attr_value"></el-input>
-              </el-col>
-              <el-col :span="6">
-                <el-button @click="delCarsAttr(index)">删除</el-button>
-              </el-col>
-            </el-row>
-          </div>
+        <CarsAttr ref="carsAttr" :value.sync="form_data.carsAttr" />
       </template>
     </VueForm>
   </div>
@@ -52,12 +39,13 @@
 <script>
 // 组件
 import VueForm from "@c/form";
+import CarsAttr from "./component/carsAttr";
 // API
 import { GetCarsBrand, GetParking } from "@/api/common";
 import { CarsAdd, CarsDetailed, CarsEdit } from "@/api/cars";
 export default {
   name: "ParkingAdd",
-  components: { VueForm },
+  components: { VueForm, CarsAttr },
   data() {
     return {
       // id
@@ -295,15 +283,7 @@ export default {
     },
     /** 车辆属性格式化 */
     formatCarsAttr(){
-      const data = this.cars_attr;
-      if(data && data.length == 0) { return false; }
-      const carsAttr = {};
-      data.forEach(item => {
-        if(item.attr_key) {
-          carsAttr[item.attr_key] = item.attr_value
-        }
-      })
-      this.form_data.carsAttr = JSON.stringify(carsAttr);
+      this.$refs.carsAttr.callbackValue();
     },
     changeEnergyType(value){
       this.form_data.oil = 0;

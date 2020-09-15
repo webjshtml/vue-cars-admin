@@ -18,7 +18,7 @@ export function GetCarsTypeList(data = {}){
     })
 }
 
-/** 获取车辆自定义属性 */
+/** 添加车辆自定义属性 */
 export function CarsTypeAdd(data = {}){
     return service.request({
         method: "post",
