@@ -1,6 +1,7 @@
 <template>
     <div>
         <CarsBasisAttr @getAttrList="getAttrList" />
+        公里：{{ countKm }}
         <el-row :gutter="15">
             <el-col :span="4" v-for="item in attr_data" :key="item.key">
                 <el-input v-model="attr_item[attr_basis_data.key][item.key]" :placeholder="item.value" />
@@ -23,6 +24,19 @@ export default {
        }
    },
    components: { CarsBasisAttr },
+   computed: {
+        // 计算公里
+        countKm(){ // 监听值变化时计算属性
+            if(!this.attr_item.basics || !this.attr_item.basics.true_oil_consume || !this.attr_item.carsBody || !this.attr_item.carsBody.tank_volume) { return 0; }
+            // 剩余油量
+            const surplusOil = this.oil * this.attr_item.carsBody.tank_volume / 100;
+            // 计算公里
+            const km = surplusOil / this.attr_item.basics.true_oil_consume * 100;
+            return km.toFixed(2);
+        }
+   },
+    // 在开发业务需求时，如果逻辑中需要 “多个对象同变化时” ，就可以用 computed 作监听
+    // 只有一个对象变化，就可以用 watch
    beforeMount(){},
    methods: {
         getAttrList(data){
@@ -55,9 +69,47 @@ export default {
             this.$emit("update:value", JSON.stringify(this.attr_item))  // JSON.parse()
         }
    },
-   props: {},
+   props: {
+       initValue: {
+           type: String,
+           default: ""
+       },
+       oil: {
+           type: Number,
+           default: 0
+       }
+   },
+   watch: {
+       initValue: {
+           handler(newValue){
+               if(newValue) {
+                   this.attr_item = JSON.parse(newValue)
+               }
+           },
+           immediate: true
+       }
+   }
    
 }
 </script>
 <style lang='scss' scoped>
 </style>
+<!--
+第一种情况：
+实测油耗(L/100KM)  /   7.8L / 100KM
+油箱容积 56L    
+油量： 100 = 56L，50 = 28L，0 = 0L
+
+总公里数：？  56 / 7.8 * 100KM = 717.94KM
+
+56L
+
+100 = 56L / 7.8 * 100KM = 717.94KM
+50 = 28L / 7.8 * 100KM = 358.97KM
+0 = 0 / 7.8 * 100KM = 358.97KM
+
+油量100 * 油箱容积56L / 100 = 56L
+油量50 * 油箱容积56L / 100 = 28L
+
+100 = 56
+-->

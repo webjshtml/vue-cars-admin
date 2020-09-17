@@ -31,7 +31,7 @@
           </div>
       </template>
       <template v-slot:carsAttr>
-        <CarsAttr ref="carsAttr" :value.sync="form_data.carsAttr" />
+        <CarsAttr ref="carsAttr" :oil="form_data.oil" :initValue="form_data.carsAttr" :value.sync="form_data.carsAttr" />
       </template>
     </VueForm>
   </div>
@@ -259,18 +259,6 @@ export default {
           }
         }
         console.log(this.form_data)
-        const carsAttr = JSON.parse(data.carsAttr);
-        const arr = [];
-        for(let key in carsAttr) {
-          const json = {}
-          json.attr_key = key;
-          json.attr_value = carsAttr[key];
-          // { attr_key: "", attr_value: "" }
-          arr.push(json)
-        }
-        this.cars_attr = arr;
-
-        // { attr_key: "", attr_value: "" }
       })
     },
     /** 添加车辆属性 */
