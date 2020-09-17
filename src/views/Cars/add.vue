@@ -31,7 +31,7 @@
           </div>
       </template>
       <template v-slot:carsAttr>
-        <CarsAttr ref="carsAttr" :oil="form_data.oil" :initValue="form_data.carsAttr" :value.sync="form_data.carsAttr" />
+        <CarsAttr ref="carsAttr" :oil="form_data.oil" :initValue="form_data.carsAttr" :countKm.sync="form_data.countKm" :value.sync="form_data.carsAttr" />
       </template>
     </VueForm>
   </div>
@@ -138,10 +138,9 @@ export default {
           label: "能源类型"
         },
         { 
-          type: "Disabled", 
-          label: "禁启用", 
-          placeholder: "请选择禁启用",
-          prop: "status"
+          type: "Input", 
+          label: "可行驶公里", 
+          prop: "countKm"
         },
         { 
           type: "Slot", 
@@ -153,6 +152,12 @@ export default {
           type: "Wangeditor", 
           prop:"content", 
           label: "车辆描述"
+        },
+        { 
+          type: "Disabled", 
+          label: "禁启用", 
+          placeholder: "请选择禁启用",
+          prop: "status"
         },
       ],
       form_handler: [
@@ -167,6 +172,7 @@ export default {
         carsFrameNumber: "",
         engineNumber: "",
         carsImg: "",
+        countKm: "",
         yearCheck: true,
         gear: 1,
         energyType: 2,

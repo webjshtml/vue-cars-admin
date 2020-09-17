@@ -1,9 +1,10 @@
 <template>
     <div>
         <CarsBasisAttr @getAttrList="getAttrList" />
-        公里：{{ countKm }}
+        {{ countKm }}
         <el-row :gutter="15">
             <el-col :span="4" v-for="item in attr_data" :key="item.key">
+                <span>{{ item.value }}</span>
                 <el-input v-model="attr_item[attr_basis_data.key][item.key]" :placeholder="item.value" />
                 <!-- <el-input v-model="attr_item["basis"][item.key]" :placeholder="item.value" /> -->
                 <!-- <el-input v-model="attr_item["carsBody"][item.key]" :placeholder="item.value" /> -->
@@ -27,12 +28,13 @@ export default {
    computed: {
         // 计算公里
         countKm(){ // 监听值变化时计算属性
-            if(!this.attr_item.basics || !this.attr_item.basics.true_oil_consume || !this.attr_item.carsBody || !this.attr_item.carsBody.tank_volume) { return 0; }
+            if(!this.attr_item.basics || !this.attr_item.basics.true_oil_consume || !this.attr_item.carsBody || !this.attr_item.carsBody.tank_volume) { return ""; }
             // 剩余油量
             const surplusOil = this.oil * this.attr_item.carsBody.tank_volume / 100;
             // 计算公里
             const km = surplusOil / this.attr_item.basics.true_oil_consume * 100;
-            return km.toFixed(2);
+            // 返回值
+            this.$emit("update:countKm", km.toFixed(2))
         }
    },
     // 在开发业务需求时，如果逻辑中需要 “多个对象同变化时” ，就可以用 computed 作监听
