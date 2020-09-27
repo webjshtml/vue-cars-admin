@@ -23,6 +23,12 @@
                         <slot :name="item.slotName" :data="scope.row"></slot>
                     </template>
                 </el-table-column>
+                <!-- switch -->
+                <el-table-column v-else-if="item.type === 'switch'" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width">
+                    <template slot-scope="scope">
+                        <el-switch @change="item.handler && item.handler(scope.row)" v-model="scope.row[item.prop]" :active-value="item.on || true" :inactive-value="item.off || false" active-color="#13ce66" inactive-color="#ff4949"> </el-switch>
+                    </template>
+                </el-table-column>
                 <!--图标显示 -->
                 <el-table-column v-else-if="item.type === 'image'" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width">
                     <template slot-scope="scope">
@@ -222,6 +228,12 @@ export default {
                 this.initConfig();
             },
             immediate: true
+        },
+        "$store.state.common.table_loadData_flag": {
+            handler(newValue) {
+                this.loadData();
+            },
+            // immediate: true // 初始化监听
         }
     }
 }
