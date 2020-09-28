@@ -1,7 +1,7 @@
 <template>
     <div>
         <TabalData ref="table" :config="table_config"></TabalData>
-        <LeaseType :flagVisible.sync="dialog_show" :data="current_cars_type_data" @callbackComponent="callbackComponent" />
+        <LeaseType :flagVisible.sync="dialog_show" :data="current_cars_lease_data" @callbackComponent="callbackComponent" />
     </div>
 </template>
 <script>
@@ -29,6 +29,14 @@ export default {
                         handler: (data) => this.leasrStatus(data)
                     },
                     { label: "车辆列表", prop: "carsList", width: 500 },
+                    { 
+                        label: "操作", 
+                        type: "operation",
+                        width: 500,
+                        buttonGroup: [
+                            { label: "编辑", type: "danger", event: "button", handler: (data) => this.edit(data) }
+                        ]
+                    },
                 ],
                 url: "leaseList",  // 真实URL请求地址
                 data: {
@@ -36,7 +44,7 @@ export default {
                     pageNumber: 1
                 },
                 form_item: [
-                    { label: "关键字",  type: "Keyword", options: ["key", "value"] },
+                    { label: "关键字",  type: "Keyword", options: ["carsLeaseTypeName", "carsNumber"] },
                 ],
                 form_handler: [
                     { label: "新增", prop: "add", type: "success", element: "button", handler: () => this.leaseTypeAddDialog() },
@@ -53,7 +61,7 @@ export default {
             // 弹窗标记
             dialog_show: false,
             // 当前公用属性数据
-            current_cars_type_data: {}
+            current_cars_lease_data: {}
 
         }
     },
@@ -68,6 +76,11 @@ export default {
         // 禁启用
         leasrStatus(data){
             console.log(data)
+        },
+        edit(data){  // 获取的 data 是 JSON 对象
+            const copyData = Object.assign({}, data);
+            this.current_cars_lease_data = copyData;   // 引用类型
+            this.dialog_show = true;
         },
         // 弹窗
         leaseTypeAddDialog(){

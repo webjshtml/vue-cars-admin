@@ -11,7 +11,7 @@
 // 组件
 import VueForm from "@c/form";
 // API
-import { LeaseAdd } from "@/api/lease";
+import { LeaseAdd, LeaseEdit } from "@/api/lease";
 export default {
   name: "",
   components: { VueForm },
@@ -57,14 +57,14 @@ export default {
     opened(){},
     /** 提交 */
     submit(){
-        this.$refs.formVue.$refs.form.validate((valid) => {
-            if (valid) {
-                this.add();
-            } else {
-                console.log('error submit!!');
-                return false;
-            }
-        });
+      this.$refs.formVue.$refs.form.validate((valid) => {
+        if (valid) {
+          this.form_data.carsLeaseTypeId ? this.edit() : this.add();
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     add(){
       LeaseAdd({...this.form_data}).then(response => {  // 扩展指定对象的所有 key 
@@ -79,6 +79,19 @@ export default {
         this.reset()
       })
     },
+    edit(){
+      LeaseEdit({...this.form_data}).then(response => {  // 扩展指定对象的所有 key 
+        this.$message({
+          message: response.message,
+          type: "success"
+        })
+        this.$store.commit("common/SET_TABL_DATA_FLAG");
+        // this.$emit("callbackComponent", {
+        //     function: "loadData"
+        // })
+        this.close()
+      })
+    },
     /** 重置表单 */
     reset(formName){
       this.$refs.formVue.resetForm();
@@ -87,6 +100,8 @@ export default {
       this.reset("form");
       // 关闭窗口
       this.dialogVisible = false;
+      // 删除ID
+      delete this.form_data.carsLeaseTypeId;
       this.$emit("update:flagVisible", false); // {}
     }
   },
@@ -98,7 +113,9 @@ export default {
     },
     data: {
       handler(newValue) {
-        this.form_data.typeValue = newValue.value;
+        console.log(2222)
+        this.form_data = newValue;
+        /** 两个 bug */
       }
     }
   }
