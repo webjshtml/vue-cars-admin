@@ -9,7 +9,7 @@
 import TabalData from "@c/tableData";
 import LeaseType from "@c/dialog/leaseType";
 // API
-import { GetCarsTypeBasis, GetCarsTypeList } from "@/api/carsAttr";
+import { LeaseStatus } from "@/api/lease";
 // common
 import { address, yearCheckType, energyType } from "@/utils/common";
 export default {
@@ -26,7 +26,7 @@ export default {
                         label: "禁启状态", 
                         prop: "carsLeaseStatus",
                         type: "switch",
-                        handler: (data) => this.leasrStatus(data)
+                        handler: (value, data) => this.leasrStatus(value, data)
                     },
                     { label: "车辆列表", prop: "carsList", width: 500 },
                     { 
@@ -74,8 +74,15 @@ export default {
             this.$refs.table.requestData();
         },
         // 禁启用
-        leasrStatus(data){
-            console.log(data)
+        leasrStatus(value, data){
+            LeaseStatus({id: data.carsLeaseTypeId, status: value}).then(response => {
+                this.$message({
+                    message: response.message,
+                    type: "success"
+                })
+            }).catch(error => {
+                data.carsLeaseStatus = !value
+            })
         },
         edit(data){  // 获取的 data 是 JSON 对象
             const copyData = Object.assign({}, data);
