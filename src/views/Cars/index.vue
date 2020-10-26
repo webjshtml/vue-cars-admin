@@ -72,7 +72,10 @@ export default {
                             deleteButton: true,
                             editButton: true,
                             editButtonLink: "CarsAdd"
-                        }
+                        },
+                        buttonGroup: [
+                            { label: "编辑", type: "danger", event: "link", name: "CarsAdd", key: "id", value: "id"}
+                        ]
                     }
                 ],
                 url: "carsList",  // 真实URL请求地址

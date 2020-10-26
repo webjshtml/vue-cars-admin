@@ -33,6 +33,14 @@
       <template v-slot:carsAttr>
         <CarsAttr ref="carsAttr" :oil="form_data.oil" :initValue="form_data.carsAttr" :countKm.sync="form_data.countKm" :value.sync="form_data.carsAttr" />
       </template>
+      <template v-slot:leaseList>
+        <el-row :gutter="20">
+          <el-col :span="4" v-for="item in leaseListData" :key="item.carsLeaseTypeId">
+            <div>{{ item.carsLeaseTypeName }}</div>
+            <el-input-number v-model="item.price" controls-position="right" :min="0" :max="10000" placeholder="请输入价格" style="width: 100%;"></el-input-number>
+          </el-col>
+        </el-row>
+      </template>
     </VueForm>
   </div>
 </template>
@@ -42,7 +50,8 @@ import VueForm from "@c/form";
 import CarsAttr from "./component/carsAttr";
 // API
 import { GetCarsBrand, GetParking } from "@/api/common";
-import { CarsAdd, CarsDetailed, CarsEdit } from "@/api/cars";
+import { CarsInfoAdd, CarsDetailed, CarsInfoEdit, CarsInfoDetailed } from "@/api/cars";
+import { LeaseList } from "@/api/lease";
 export default {
   name: "ParkingAdd",
   components: { VueForm, CarsAttr },
@@ -154,6 +163,12 @@ export default {
           label: "车辆描述"
         },
         { 
+          type: "Slot", 
+          slotName: "leaseList",
+          prop:"lease", 
+          label: "租赁价格"
+        },
+        { 
           type: "Disabled", 
           label: "禁启用", 
           placeholder: "请选择禁启用",
@@ -183,6 +198,8 @@ export default {
         maintainDate: "",
         status: true,
       },
+      // 车辆租赁类型
+      leaseListData: [],
       // 车辆品牌列表
       carsBrandList: [],
       // 上传文件配置
@@ -195,6 +212,7 @@ export default {
     this.getCarsBrandList();
     this.getParkingList();
     this.getDetailed();
+    this.getLeaseList()
   },
   mounted() {},
   methods: {
@@ -211,7 +229,7 @@ export default {
     },
     /** edit */
     edit(){
-      CarsEdit({...this.form_data, id: this.id}).then(response => {
+      CarsInfoEdit({...this.form_data, id: this.id, leasePrice: this.leaseListData}).then(response => {
         this.$message({
           message: response.message,
           type: "success"
@@ -219,7 +237,7 @@ export default {
       })
     },
     add(){
-      CarsAdd(this.form_data).then(response => {
+      CarsInfoAdd({...this.form_data, leasePrice: this.leaseListData}).then(response => {
         this.$message({
           message: response.message,
           type: "success"
@@ -256,7 +274,7 @@ export default {
     /** 获取详情 */
     getDetailed(){
       if(!this.id) { return false; }
-      CarsDetailed({id: this.id}).then(response => {
+      CarsInfoDetailed({id: this.id}).then(response => {
         const data = response.data;
         if(!data) { return false };
         for(let key in data) {
@@ -264,7 +282,19 @@ export default {
             this.form_data[key] = data[key];
           }
         }
+        // 更新租赁类型数据
+        this.leaseListData = data.leasePrice;
         console.log(this.form_data)
+      })
+    },
+    /** 获取租赁列表 */
+    getLeaseList(){
+      if(this.id) { return false; }  // id存在则不请求
+      LeaseList().then(response => {
+        
+        const data = response.data.data
+        if(data ) { this.leaseListData = data }
+        
       })
     },
     /** 添加车辆属性 */
