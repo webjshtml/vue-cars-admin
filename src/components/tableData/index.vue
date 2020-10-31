@@ -38,12 +38,12 @@
                 <!--操作 -->
                 <el-table-column v-else-if="item.type === 'operation'" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width">
                     <template slot-scope="scope">
-                        <!--编辑-->
+                        <!--按钮组-->
                         <template v-if="item.buttonGroup && item.buttonGroup.length > 0">
                             <template v-for="button in item.buttonGroup">
                                 <!-- 事件 -->
                                 <el-button 
-                                    v-if="button.event === 'button'" 
+                                    v-if="button.event === 'button'"
                                     :type="button.type" 
                                     :key="button.id" 
                                     @click="button.handler && button.handler(scope.row)" size="small">
@@ -56,7 +56,7 @@
                             </template>
                         </template>
                         <!--额外-->
-                        <slot v-if="item.slotName" :nae="item.slotName" :data="scope.row"></slot>
+                        <slot v-if="item.slotName" :name="item.slotName" :data="scope.row"></slot>
                         <!--删除-->
                         <el-button size="small" v-if="item.default && item.default.deleteButton" :loading="scope.row[item.default.deleteKey || 'id'] == rowId" @click="delConfirm(scope.row[item.default.deleteKey || 'id'])">删除</el-button>
                     </template>

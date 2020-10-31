@@ -7,6 +7,9 @@ const requestUrl = {
     carsListDelete: "/cars/delete/",
     carsAttrList: "/carsAttr/list/",
     // 销售管理 - 租车类型
-    leaseList: "/lease/list/"
+    leaseList: "/lease/list/",
+    // 会员 - 列表
+    memberList: "/member/list/",
+    memberListDelete: "/member/delete/"
 }
 export default requestUrl;
