@@ -10,6 +10,8 @@ const requestUrl = {
     leaseList: "/lease/list/",
     // 会员 - 列表
     memberList: "/member/list/",
-    memberListDelete: "/member/delete/"
+    memberListDelete: "/member/delete/",
+    // 订单列表
+    orderList: "/order/list/"
 }
 export default requestUrl;

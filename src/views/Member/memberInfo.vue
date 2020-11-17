@@ -69,7 +69,8 @@ export default {
                 type: "Upload", 
                 label: "身份证（正面）", 
                 prop: "cardPhotoFace",
-                required: true
+                required: true,
+                requestFlag: true
             },
             { 
                 type: "Upload", 
@@ -138,7 +139,11 @@ export default {
         editMember(){
             // ...扩展
             Edit({...this.form_data, id:this.id}).then(response => {
-                
+                this.$message({
+                    message: response.message,
+                    type: "success"
+                })
+                this.$router.go(-1);
             })
         },
         callbackComponent(params){

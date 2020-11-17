@@ -24,7 +24,7 @@ export default {
 		};
 	},
 	beforeMount(){
-		this.getQiniuToken();
+		this.requestFlag && this.getQiniuToken();
 	},
 	methods: {
 		getQiniuToken() {
@@ -37,12 +37,12 @@ export default {
 			GetQiniuToken(requestData).then(response => {
 				const data = response.data;
 				if (data.token) {
-					this.uploadData.token = data.token;
+					this.$store.commit("common/SET_UPLOAD_TOKEN", data.token)
 				}
 			});
 		},
 		handleAvatarSuccess(res, file) {
-			this.imageUrl = `http://qggv6kp6m.hn-bkt.clouddn.com/${res.key}`;
+			this.imageUrl = `http://qij9j2gxu.hn-bkt.clouddn.com/${res.key}`;
 			this.$emit("update:value", this.imageUrl)
 		},
 		// 上传之前
@@ -58,6 +58,7 @@ export default {
 			let fileName = file.name;
 			let key = encodeURI(fileName);
 			this.uploadData.key = key;
+			this.uploadData.token = this.$store.state.common.upload_token;
 			return isJPG && isLt2M;
 		}
 	},
@@ -65,6 +66,10 @@ export default {
 		imgUrl: {
 			type: String,
 			default: ""
+		},
+		requestFlag: {
+			type: Boolean,
+			default: false
 		}
 	},
 	watch: {

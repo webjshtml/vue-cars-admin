@@ -2,24 +2,26 @@
   <div>
     <!-- 表格数据 -->
     <TabalData ref="table" :config="table_config">
-       <!--操作-->
-      <template v-slot:operation="slotData">
-          <el-button type="danger" size="small" :disabled="!slotData.data.blacklist">黑名单</el-button>
+      <template v-slot:realPhoto="slotData">
+        <img :src="realPhoto" alt="" class="real-photo" @click="showPhoto(slotData)">
       </template>
     </TabalData>
-    <AddCarsBrand :flagVisible.sync="dialog_show" :data="data_brand" @callbackComponent="callbackComponent" /><!--父组件往子组件传数据时，是一个单向数据流-->
+    <RealPhoto :flagVisible.sync="dialog_show" :data="data_photo" :title="title" @callbackComponent="callbackComponent" /><!--父组件往子组件传数据时，是一个单向数据流-->
   </div>
 </template>
 <script>
 import TabalData from "@c/tableData";
-import AddCarsBrand from "@c/dialog/addCarsBrand";
+import RealPhoto from "@c/dialog/realPhoto";
 // API
-import { BrandStatus } from "@/api/brand";
+import { UpdateRealName, Blacklist, Photo, AmountClear } from "@/api/member";
 export default {
   name: "Parking",
-  components: { AddCarsBrand, TabalData },
+  components: { RealPhoto, TabalData },
   data() {
     return {
+      realPhoto: require("@/assets/logo.png"),
+      // 弹窗的标题
+      title: "",
       // 表格配置
       table_config: {
         thead: [
@@ -44,28 +46,32 @@ export default {
             width: 200
           },
           { 
+            label: "押金",
+            prop: "gilding"
+          },
+          { 
+            label: "余额",
+            prop: "amount"
+          },
+          { 
             label: "实名认证",
             prop: "check_real_name",
-            type: "function",
-            callback: (row) => {
-              return row.check_real_name ? "已认证" : "-"
-            }
+            type: "switch",
+            slotName: "realPhoto",
+            handler: (status, data) => this.updateReal(status, data, "identity")
           },
           { 
             label: "驾驶证",
             prop: "check_cars",
-            type: "function",
-            callback: (row) => {
-              return row.check_cars ? "已认证" : "-"
-            }
+            type: "switch",
+            slotName: "realPhoto",
+            handler: (status, data) => this.updateReal(status, data, "drive")
           },
           { 
             label: "黑名单",
             prop: "blacklist",
-            type: "function",
-            callback: (row) => {
-              return row.blacklist ? "是" : "-"
-            }
+            type: "switch",
+            handler: (status, data) => this.updateBlacklist(status, data)
           },
           { 
             label: "操作",
@@ -74,9 +80,11 @@ export default {
             buttonGroup: [
               { event: "link", label: "详情", type: "primary", name: "MemberDetailed", key: "id", value: "memberId" },
               { event: "link", label: "编辑", type: "primary", name: "MemberInfo", key: "id", value: "memberId" },
+              { event: "button", label: "金额清空", type: "", handler: (data) => this.amountClear(data) },
             ],
             default: {
-              deleteButton: true
+              deleteButton: true,
+              deleteKey: "memberId"
             },
             slotName: "operation"
           }
@@ -95,7 +103,7 @@ export default {
       },
       // row_id
       row_id: "",
-      data_brand: {},
+      data_photo: {},
       // switch_disabled
       switch_disabled: "",
 			// 弹窗标记
@@ -109,6 +117,54 @@ export default {
     callbackComponent(params){
       console.log(params)
       if(params.function) { this[params.function](); }
+    },
+    /** 修改实名认证 */
+    updateReal(status, data, type){
+      const requestData = {
+        status,
+        id: data.memberId,
+        type
+      }
+      UpdateRealName(requestData).then(response => {
+        const data = response;
+        this.$message({
+          message: response.message,
+          type: "success"
+        })
+      })
+    },
+    /** 黑名单 */
+    updateBlacklist(status, data){
+      const requestData = {
+        status,
+        id: data.memberId
+      }
+      Blacklist(requestData).then(response => {
+        const data = response;
+        this.$message({
+          message: response.message,
+          type: "success"
+        })
+      })
+    },
+    /** 图片 */
+    showPhoto(data){
+      const type = data.type;
+      // 更新弹窗标题
+      this.title = type === "check_cars" ? "驾驶证" : "实名认证";
+      // 接口
+      const requestData = {
+        id: data.data.memberId,
+        type: type === "check_cars" ? "drive" : "identity"
+      }
+      Photo(requestData).then(response => {
+        const data = response.data
+        if(data) {
+          this.data_photo = data;
+          this.dialog_show = true;
+        }
+      })
+      
     },
     /** 搜索 */
     search(){
@@ -125,8 +181,20 @@ export default {
       // this.data_brand = JSON.parse(JSON.stringify(data));
       this.data_brand = Object.assign({}, data); // Es6 浅拷贝
       this.dialog_show = true;
+    },
+    /** 清空金额 */
+    amountClear(data){
+      AmountClear({member_id : data.memberId})
     }
   }
 };
 </script>
-<style lass="scss" scoped></style>
+<style lass="scss" scoped>
+.real-photo {
+  display: inline;
+  width: 30px;
+  margin-left: 5px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+</style>

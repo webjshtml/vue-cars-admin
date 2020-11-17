@@ -27,7 +27,7 @@
             </template>
             <!-- 文件上传 -->
             <template v-if="item.type === 'Upload'">
-                <Upload :imgUrl="formData[item.prop]" :value.sync="formData[item.prop]" />
+                <Upload :imgUrl="formData[item.prop]" :value.sync="formData[item.prop]" :requestFlag="item.requestFlag" />
             </template>
         </el-form-item>
         <!-- 按钮 -->
