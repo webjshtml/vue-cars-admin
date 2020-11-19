@@ -59,7 +59,43 @@ const state = {
         { label: "用户名", value: "username" },
         { label: "真实姓名", value: "truename" },
         { label: "身份证", value: "card_id" },
-    ]
+    ],
+    // 订单状态
+    order_status: {
+        WAIT: {
+            zh: "待取车"
+        },
+        OVERTIME: {
+            zh: "超时"
+        },
+        OVER: {
+            zh: "完成"
+        },
+        CANCEL: {
+            zh: "取消"
+        },
+        RETURN: {
+            zh: "待还车"
+        }
+    },
+    // 车辆状态
+    cars_status: {
+        WAIT: {
+            zh: "已预约"
+        },
+        DRIVING: {
+            zh: "行驶中"
+        },
+        CHEDK: {
+            zh: "年检"
+        },
+        MAINTAIN: {
+            zh: "保养"
+        },
+        REPAIR: {
+            zh: "维修"
+        }
+    }
 }
 export default {
     namespaced: true,

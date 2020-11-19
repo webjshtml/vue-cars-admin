@@ -15,7 +15,7 @@ import CityArea from "@c/common/cityArea";
 import MapLocation from "@c/dialog/showMapLocation";
 import TabalData from "@c/tableData";
 // API
-import { CarsStatus } from "@/api/cars";
+import { CarsStatus, CarsLock } from "@/api/cars";
 // common
 import { address, yearCheckType, energyType } from "@/utils/common";
 export default {
@@ -58,6 +58,16 @@ export default {
                         slotName: "status",
                         width: "100px"
                     },
+                    { 
+                        label: "车辆状态", 
+                        prop: "cars_status",
+                        type: "function",
+                        callback: (row) => {
+                            const carsStatus = this.$store.state.config.cars_status;
+                            const status = carsStatus[row.carsStatus];
+                            return status ? status.zh : "";
+                        }
+                    },
                     { label: "停车场", prop: "parkingName" },
                     { 
                         label: "区域",
@@ -68,13 +78,15 @@ export default {
                     { 
                         label: "操作",
                         type: "operation",
+                        width: 300,
                         default: {
                             deleteButton: true,
                             editButton: true,
                             editButtonLink: "CarsAdd"
                         },
                         buttonGroup: [
-                            { label: "编辑", type: "danger", event: "link", name: "CarsAdd", key: "id", value: "id"}
+                            { label: "编辑", type: "danger", event: "link", name: "CarsAdd", key: "id", value: "id"},
+                            { label: "车辆释放", type: "", event: "button", handler: (data) => this.lock(data) },
                         ]
                     }
                 ],
@@ -140,6 +152,9 @@ export default {
         showMap(data){
             this.map_show = true;
             this.parking_data = data;
+        },
+        lock(data){
+            CarsLock({id: data.id})
         },
         aaaa(){
             alert(1111)

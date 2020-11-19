@@ -15,7 +15,7 @@ import CityArea from "@c/common/cityArea";
 import MapLocation from "@c/dialog/showMapLocation";
 import TabalData from "@c/tableData";
 // API
-import { CarsStatus } from "@/api/cars";
+import { OrderWait, OrderOvertime, OrderOver, OrderCancel, OrderReturn } from "@/api/order";
 // common
 import { address, yearCheckType, energyType } from "@/utils/common";
 export default {
@@ -25,56 +25,50 @@ export default {
             // 表格配置
             table_config:{
                 thead: [
-                    { label: "车牌号", prop: "carsMode" },
-                    { label: "车辆品牌", prop: "nameCh" },
+                    { label: "订单号", prop: "order_no" },
                     { 
-                        label: "车辆LOGO", 
-                        prop: "imgUrl",
-                        type: "image"
-                    },
-                    { 
-                        label: "车辆图片", 
-                        prop: "carsImg",
-                        type: "image"
-                    },
-                    { 
-                        label: "年检", 
-                        prop: "yearCheck",
+                        label: "状态", 
+                        prop: "order_status",
                         type: "function",
-                        callback: (row, prop) => yearCheckType(row[prop]),
-                        width: "100px"
+                        callback: (row) => {
+                            const orderStatus = this.$store.state.config.order_status;
+                            const status = orderStatus[row.order_status];
+                            return status ? status.zh : "";
+                        }
                     },
                     { 
-                        label: "能源类型", 
-                        prop: "energyType",
+                        label: "日期", 
+                        prop: "create_date",
                         type: "function",
-                        callback: (row, prop) => energyType(row[prop]),
-                        width: "100px"
+                        callback: (row) => {
+                            // 空数据时
+                            if(!row.create_date) { return ""; }
+                            // 分割日期
+                            const dateSplit = row.create_date.split(" ");
+                            return `${dateSplit[0]} <br/> ${dateSplit[1]}`
+                        }
                     },
                     { 
-                        label: "禁启用",
-                        prop: "status",
-                        type: "slot",
-                        slotName: "status",
-                        width: "100px"
+                        label: "金额", 
+                        prop: "amount"
                     },
-                    { label: "停车场", prop: "parkingName" },
-                    { 
-                        label: "区域",
-                        prop: "address",
-                        type: "function",
-                        callback: (row, prop) => address(row[prop])
-                    },
+                   
                     { 
                         label: "操作",
                         type: "operation",
+                        width: 550,
                         default: {
                             deleteButton: true,
                             editButton: true,
                             editButtonLink: "CarsAdd"
                         },
                         buttonGroup: [
-                            { label: "编辑", type: "danger", event: "link", name: "CarsAdd", key: "id", value: "id"}
+                            { label: "编辑", type: "danger", event: "link", name: "CarsAdd", key: "id", value: "id"},
+                            { label: "待取车", type: "", event: "button", handler: (data) => this.orderWait(data) },
+                            { label: "超时", type: "", event: "button", handler: (data) => this.orderOvertime(data) },
+                            { label: "完成", type: "", event: "button", handler: (data) => this.orderOver(data) },
+                            { label: "取消", type: "", event: "button", handler: (data) => this.orderCancel(data) },
+                            { label: "待还车", type: "", event: "button", handler: (data) => this.ordrerReturn(data) },
                         ]
                     }
                 ],
@@ -143,7 +137,39 @@ export default {
         },
         aaaa(){
             alert(1111)
-        }
+        },
+        orderWait(data){
+            OrderWait({
+                order_no: data.order_no,
+                cars_id: data.cars_id
+            }).then(response => { this.loadData(); })
+        },
+        orderOvertime(data){
+            OrderOvertime({
+                order_no: data.order_no,
+                cars_id: data.cars_id
+            }).then(response => { this.loadData(); })
+        },
+        orderOver(data){
+            OrderOver({
+                order_no: data.order_no,
+                cars_id: data.cars_id
+            }).then(response => { this.loadData(); })
+        },
+
+        orderCancel(data){
+            OrderCancel({
+                order_no: data.order_no,
+                cars_id: data.cars_id
+            }).then(response => { this.loadData(); })
+        },
+        ordrerReturn(data){
+            OrderReturn({
+                order_no: data.order_no,
+                cars_id: data.cars_id
+            }).then(response => { this.loadData(); })
+        },
+        loadData(){ this.$refs.table.requestData(); }
     },
     
     // DOM元素渲染之前（生命周期）

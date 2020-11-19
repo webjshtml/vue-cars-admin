@@ -72,3 +72,13 @@ export function CarsInfoEdit(data = {}){
         data
     })
 }
+
+
+/** 释放车辆 */
+export function CarsLock(data = {}){
+    return service.request({
+        method: "post",
+        url: "/cars/lock/",
+        data
+    })
+}
