@@ -3,26 +3,20 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, watch } from "@vue/composition-api";
+import { OrderList } from "@/api/order";
 export default {
   name: "ConsoleIndex",
   components: {},
   props: {},
-  setup(props, { root }){
-    // 监听
-    // watch(xxx, () => {})
-    // 生命周期
-    // onBeforeMount(() => {})
-    // onMounted(() => {})
-    // onBeforeUpdate(() => {})
-    // onUpdated(() => {})
-    // onBeforeUnmount(() => {})
-    // onUnmounted(() => {})
-    // onErrorCaptured(() => {})
-    // onRenderTracked(() => {})
-    // onRenderTriggered(() => {})
-    return {}
+  mounted(){
+    OrderList({
+      pageSize: 10,
+      pageNumber: 1
+    }).then(response => {
+
+    })
   }
+  
 }
 </script>
 <style lang="scss" scoped>

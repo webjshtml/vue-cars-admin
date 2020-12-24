@@ -24,25 +24,25 @@ export default {
 		};
 	},
 	beforeMount(){
-		this.getQiniuToken();
+		this.requestFlag && this.getQiniuToken();
 	},
 	methods: {
 		getQiniuToken() {
 			// 在工作中，
 			const requestData = {
-				ak: "Ef2A2AIv0WHGYfp1BCgPdcdqzK6gqXaVi6IoQztk",
-				sk: "zPSWROJi7SPDe_MqIPoksMY-JVYep9x9l5LHMBMj",
-				buckety: "webnct"
+				ak: "5F2rCgyOj6l8_EvHLu5ENzWVtABbCe8iXs6IileX",
+				sk: "h7z4Pw3jOjkW3OQqIG1CVxx3APkokt4IVctLg78n",
+				buckety: "bigbigtime"
 			};
 			GetQiniuToken(requestData).then(response => {
 				const data = response.data;
 				if (data.token) {
-					this.uploadData.token = data.token;
+					this.$store.commit("common/SET_UPLOAD_TOKEN", data.token)
 				}
 			});
 		},
 		handleAvatarSuccess(res, file) {
-			this.imageUrl = `http://qff6p8hrd.hn-bkt.clouddn.com/${res.key}`;
+			this.imageUrl = `http://qij9j2gxu.hn-bkt.clouddn.com/${res.key}`;
 			this.$emit("update:value", this.imageUrl)
 		},
 		// 上传之前
@@ -58,13 +58,25 @@ export default {
 			let fileName = file.name;
 			let key = encodeURI(fileName);
 			this.uploadData.key = key;
+			this.uploadData.token = this.$store.state.common.upload_token;
 			return isJPG && isLt2M;
 		}
 	},
-	props: {
+	props: {  // 接收到的数据属于“静态数据”，是单向数据，不能反向修改
 		imgUrl: {
 			type: String,
 			default: ""
+		},
+		requestFlag: {
+			type: Boolean,
+			default: false
+		}
+	},
+	watch: {
+		imgUrl: {
+			handler(newValue){
+				this.imageUrl = newValue;
+			}
 		}
 	}
 };

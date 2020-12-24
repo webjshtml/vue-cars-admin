@@ -9,9 +9,12 @@
             <span>{{ item.meta ? item.meta.title : "" }}</span>
           </template>
           <template v-if="item.children && item.children.length > 0">
-            <el-menu-item v-for="sub in item.children" :key="sub.id" :index="sub.path">
-              {{ sub.meta ? sub.meta.title : ""}}
-            </el-menu-item>
+            <template v-for="sub in item.children">
+              <el-menu-item v-if="!sub.hidden" :key="sub.id" :index="sub.path">
+                {{ sub.meta ? sub.meta.title : ""}}
+              </el-menu-item>
+            </template>
+            
           </template>
         </el-submenu>
       </template>

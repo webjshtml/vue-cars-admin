@@ -3,6 +3,10 @@
         <el-form-item v-for="item in formItme" :key="item.prop" :label="item.label" :prop="item.prop" :rules="item.rules">
             <!-- Input-->
             <el-input v-if="item.type === 'Input'" v-model.trim="formData[item.prop]" :placeholder="item.placeholder" :style="{width: item.width}" :disabled="item.disabled"></el-input>
+            <!-- Input-->
+            <el-input type="textarea" :rows="item.rows || 5" v-if="item.type === 'Textarea'" v-model.trim="formData[item.prop]" :placeholder="item.placeholder" :style="{width: item.width}" :disabled="item.disabled"></el-input>
+            <!-- InputNumber -->
+            <el-input-number v-if="item.type === 'InputNumber'" v-model="formData[item.prop]" controls-position="right" :min="item.min || 0" :max="item.max || 10000"></el-input-number>
             <!-- Select-->
             <el-select filterable v-if="item.type === 'Select'" :aaaa="item.options" v-model.trim="formData[item.prop]" :placeholder="item.placeholder" :style="{width: item.width}" :disabled="item.disabled">
                 <el-option v-for="selectItem in item.options" :key="selectItem.value || selectItem[item.select_vlaue]" :value="selectItem.value || selectItem[item.select_vlaue]" :label="selectItem.label || selectItem[item.select_label]"></el-option>
@@ -23,7 +27,7 @@
             </template>
             <!-- 文件上传 -->
             <template v-if="item.type === 'Upload'">
-                <Upload :imgUrl="formData[item.prop]" :value.sync="formData[item.prop]" />
+                <Upload :imgUrl="formData[item.prop]" :value.sync="formData[item.prop]" :requestFlag="item.requestFlag" />
             </template>
         </el-form-item>
         <!-- 按钮 -->
@@ -69,8 +73,11 @@ export default {
             radio_disabled: this.$store.state.config.radio_disabled,
             type_msg: {
                 "Input": "请输入",
+                "InputNumber": "请输入",
                 "Radio": "请选择",
-                "Select": "请选择"
+                "Select": "请选择",
+                "Disabled": "请选择",
+                "Upload": "请上传"
             },
             // 清除富文本
             wangeditorClear: false  // true false
